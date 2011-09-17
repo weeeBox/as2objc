@@ -303,7 +303,6 @@ public class AS3_exLexer extends Lexer {
 
         /*---------------------------UNICODE_INDENTIFER END------------------------------------------*/
         private final void debugMethod(String methodName,String text){
-            System.out.println("recognized as <<"+methodName+">> text=("+text+")");
         }    
 
 

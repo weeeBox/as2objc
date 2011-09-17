@@ -349,7 +349,7 @@ public class ASPrettyPrinter
 	{
 		return mBlockIndent;
 	}
-	public String print(int startIndent) throws RecognitionException
+	public fileContents_return print(int startIndent) throws RecognitionException
 	{
 		if (mSourceData.indexOf(mIgnoreFileProcessing)>=0)
 		{
@@ -362,9 +362,8 @@ public class ASPrettyPrinter
 		mReplaceRange=null;
 		mAdditionalTextAddedAllPasses="";
 		mRemovedTextAllPasses="";
-		int maxPasses=2; //right now, there's only two passes if we are aligning equals signs or adding braces 
+		int maxPasses=1; //right now, there's only two passes if we are aligning equals signs or adding braces 
 		int currentPasses=0;
-		while (currentPasses<maxPasses)
 		{
 			currentPasses++;
 			
@@ -413,194 +412,15 @@ public class ASPrettyPrinter
 				mCurrentDeclEqualContext=new EqualContext(null, 0);
 				mRootDeclEqualContext=mCurrentDeclEqualContext;
 			}
-//			else
-//				mCurrentDeclEqualContext=null;
-			try
-			{
-	//			if (mIsCompleteFile)
-					mWorkingSource=mSourceData;
-	//			else
-	//				mWorkingSource="class DummyClassWrapper {"+mSourceData+ "}";
-					
-				ANTLRStringStream stream=new ANTLRStringStream(mWorkingSource);
-				AS3_exLexer l2=new AS3_exLexer(stream);
-				mRawTokens=new CommonTokenStream(l2);
-				AS3_exParser p2=new AS3_exParser(this, mRawTokens);
+			mWorkingSource=mSourceData;
 				
-				fileContents_return retVal=p2.fileContents();
-				
-				//handle any remaining hidden tokens
-				Token t=new CommonToken(AS3_exParser.EOF, "");
-				t.setTokenIndex(mRawTokens.size());
-				emit(t);
-				
-				//process braces that may need to be added or deleted
-				{
-					List<EditItem> editItems=new ArrayList<EditItem>();
-					for (StatementBraceInfo info : mCompletedBraceInfos) 
-					{
-						if (info.isBracesCurrentlyExist())
-						{
-							if (isRemoveBraces(info))
-							{
-								int startBracePos=mOutputBuffer.indexOf("{", info.getStartBracePos());
-								int endBracePos=mOutputBuffer.lastIndexOf("}", info.getEndBracePos());
-								int endBracePosInSource=mSourceData.lastIndexOf('}', info.getOriginalDocEndPosition());
-								editItems.add(new DeleteItem(startBracePos, 1, info.getOriginalDocStartPosition()));
-								editItems.add(new DeleteItem(endBracePos, 1, endBracePosInSource));
-								
-								//if brace is followed by nothing but a carriage return, return the next
-								//cr as well.
-								int nextCR=mOutputBuffer.indexOf("\n", startBracePos+1);
-								if (nextCR>=0)
-								{
-									String nextChars=mOutputBuffer.substring(startBracePos+1, nextCR).trim();
-									if (nextChars.length()==0)
-									{
-										editItems.add(new DeleteItem(nextCR, 1, -1));
-									}
-								}
-								nextCR=mOutputBuffer.indexOf("\n", endBracePos+1);
-								if (nextCR>=0)
-								{
-									String nextChars=mOutputBuffer.substring(endBracePos+1, nextCR).trim();
-									if (nextChars.length()==0)
-									{
-										editItems.add(new DeleteItem(nextCR, 1, -1));
-									}
-								}								
-							}
-						}
-						else
-						{
-							if (isAddBraces(info))
-							{
-								editItems.add(new InsertItem(info.getStartBracePos(), "{", info.getOriginalDocStartPosition()));
-								editItems.add(new InsertItem(info.getEndBracePos(), "}", info.getOriginalDocEndPosition()));
-							}
-						}
-					}
-
-					Collections.sort(editItems, new Comparator<EditItem>() {
-						public int compare(EditItem o1, EditItem o2) {
-							return o1.mLocation-o2.mLocation;
-						}
-					});
-
-					if (mReplaceMap==null)
-						mReplaceMap=new HashMap<Integer, ReplacementRange>();
-
-					int addedChars=0;
-					for (int j=0;j<editItems.size();j++)
-					{
-						EditItem item=editItems.get(j);
-						if (item instanceof InsertItem)
-						{
-							InsertItem iItem=(InsertItem)item;
-							mOutputBuffer.insert(item.getLocation()+addedChars, iItem.getData());
-
-							ReplacementRange existingRange=mReplaceMap.get(iItem.getOriginalInsertLocation());
-							if (existingRange!=null)
-							{
-								//this can happen if two close braces are added at the same point in the file.  As such,
-								//I'm handling this special case.
-								existingRange.setChangedText(existingRange.getAddedText()+iItem.getData(), existingRange.getDeletedText());
-								existingRange.getRangeInFormattedDoc().y+=iItem.getData().length();
-							}
-							else
-							{
-								ReplacementRange range=new ReplacementRange(new Point(item.getLocation()+addedChars, item.getLocation()+addedChars+iItem.getData().length()), new Point(iItem.getOriginalInsertLocation(),iItem.getOriginalInsertLocation()));
-								mReplaceMap.put(iItem.getOriginalInsertLocation(), range);
-								range.setChangedText(iItem.getData(), "");
-							}
-							addedChars+=iItem.getData().length();
-							mAdditionalTextAdded+=iItem.getData();
-							mAdditionalTextAddedAllPasses+=iItem.getData();
-
-						}
-						else
-						{
-							//add replacemap item, but only if non-whitespace is being deleted
-							//TODO: what if a brace is added and deleted at same location? Will that break the merging code?
-							DeleteItem dItem=(DeleteItem)item;
-							String removedData=mOutputBuffer.substring(dItem.getLocation()+addedChars, dItem.getLocation()+dItem.getLength()+addedChars);
-							if (dItem.getOriginalDeleteLocation()>=0)
-							{
-								ReplacementRange range=new ReplacementRange(new Point(item.getLocation()+addedChars, item.getLocation()+addedChars), new Point(dItem.getOriginalDeleteLocation(),dItem.getOriginalDeleteLocation()+dItem.getLength()));
-								mReplaceMap.put(dItem.getOriginalDeleteLocation(), range);
-								range.setChangedText("", removedData);
-							}
-							mOutputBuffer.delete(dItem.getLocation()+addedChars, dItem.getLocation()+dItem.getLength()+addedChars);
-							addedChars-=removedData.length();
-							mRemovedText+=removedData;
-							mRemovedTextAllPasses+=removedData;
-							
-						}
-					}
-				}
-				
-				String resultText=mOutputBuffer.toString();
-					
-				mParseErrors=p2.getParseErrors();
-				if (mParseErrors!=null || resultText==null)
-					return null;
-	
-				String oldString=mWorkingSource+mAdditionalTextAdded;
-				if (mAdditionalTextAdded.length()==0 && mRemovedText.length()==0 && ActionScriptFormatter.validateNonWhitespaceIdentical(resultText, mWorkingSource) || ((mAdditionalTextAdded.length()>0 || (mRemovedText.length()>0)) && ActionScriptFormatter.validateNonWhitespaceCharCounts(resultText+mRemovedText, oldString)))
-				{
-					//trim extra newlines at the end of result text
-					if (mDoFormat)
-					{
-						int oldEndLines=getEndEOLs(mWorkingSource)-(addedEndCRs ? 2 : 0); //I may have added two above
-						int newEndLines=getEndEOLs(resultText);
-						if (newEndLines>oldEndLines)
-						{
-							resultText=resultText.substring(0, resultText.length()-(newEndLines-oldEndLines));
-							if (mOutputRange!=null && mOutputRange.y>resultText.length())
-							{
-								mOutputRange.y=resultText.length();
-							}
-						}
-					}
-					
-					//if we are trying to capture the output range but haven't captured it yet
-					if (mOutputRange!=null && mOutputRange.y<0)
-					{
-						mOutputRange.y=resultText.length();
-						mReplaceRange.y=mWorkingSource.length();
-						if (mDoFormat && addedEndCRs)
-							mReplaceRange.y-="\n\n".length();
-					}
-					
-					if (mRootDeclEqualContext!=null)
-					{
-						mDeclEqualPosMap=new HashMap<String, Integer>();
-						mRootDeclEqualContext.fillMap(mDeclEqualPosMap);
-					}
-					
-					//if multiple passes are allowed and we would benefit from one and this is not a partial format
-					if (mAllowMultiplePasses && needAnotherPass() && mOutputRange==null)
-					{
-						mSourceData=resultText;
-						continue;
-					}
-					return resultText;
-				}
-				else
-				{
-					mParseErrors=new ArrayList<Exception>();
-					mParseErrors.add(new Exception("Internal error: Formatted text doesn't match source. "+resultText+"!="+mWorkingSource));
-				}
-			}
-			finally
-			{
-			}
-			return null;
+			ANTLRStringStream stream=new ANTLRStringStream(mWorkingSource);
+			AS3_exLexer l2=new AS3_exLexer(stream);
+			mRawTokens=new CommonTokenStream(l2);
+			AS3_exParser p2=new AS3_exParser(this, mRawTokens);
+			
+			return p2.fileContents();
 		}
-		
-		//return what I have in case the multiple
-		//passes algorithm gets confused
-		return mSourceData;
 	}
 	
 	private static int getEndEOLs(String source)
