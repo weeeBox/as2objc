@@ -187,12 +187,12 @@ public class TreeHelper
 		return isElementOfType(element, AS3_exParser.DOT);
 	}
 
-	public static boolean isLCurly(Tree element) 
+	public static boolean isCurlyOpen(Tree element) 
 	{
 		return isElementOfType(element, AS3_exParser.LCURLY);
 	}
 	
-	public static boolean isRCurly(Tree element) 
+	public static boolean isCurlyClosed(Tree element) 
 	{
 		return isElementOfType(element, AS3_exParser.RCURLY);
 	}
@@ -202,6 +202,11 @@ public class TreeHelper
 		return isElementOfType(element, AS3_exParser.SEMI);
 	}
 
+	public static boolean isExtends(Tree element) 
+	{
+		return isElementOfType(element, AS3_exParser.EXTENDS);
+	}
+	
 	public static boolean isImplements(Tree element) 
 	{
 		return isElementOfType(element, AS3_exParser.IMPLEMENTS);
