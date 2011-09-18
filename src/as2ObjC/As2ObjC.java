@@ -1,6 +1,7 @@
 package as2ObjC;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,18 +11,25 @@ import actionscriptinfocollector.text.TextDocument;
 
 public class As2ObjC 
 {
-	public static void main(String[] args) throws Exception 
+	public static void main(String[] args) 
 	{
 		File asSourceFile = new File(args[0]);
 		File outputDir = new File(args[1]);
 		
-		List<ASCollector> collectors = new ArrayList<ASCollector>();
-		IDocument doc = TextDocument.read(asSourceFile);
-		ASCollector.parse(doc, collectors);
-		
-		String moduleName = extractFileNameNoExt(asSourceFile);
-		CodeWriter writer = new CodeWriter(moduleName, outputDir);
-		writer.write(collectors);
+		try
+		{
+			List<ASCollector> collectors = new ArrayList<ASCollector>();
+			IDocument doc = TextDocument.read(asSourceFile);
+			ASCollector.parse(doc, collectors);
+			
+			String moduleName = extractFileNameNoExt(asSourceFile);
+			CodeWriter writer = new CodeWriter(moduleName, outputDir);
+			writer.write(collectors);
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
     }
 
 	private static String extractFileNameNoExt(File file)
