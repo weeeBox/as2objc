@@ -166,20 +166,20 @@ public class CodeWriter
 			int blockStart = functionText.indexOf('{') + 1;
 			int blockEnd = functionText.lastIndexOf('}');
 			BlockParser parser = new BlockParser();
-			String body = parser.parse(functionText.substring(blockStart, blockEnd));
+			List<String> bodyLines = parser.parse(functionText.substring(blockStart, blockEnd));
 			
 			if (isConstructor)
 			{
 				writeln(impl, "self = [super init];");
 				writeln(impl, "if (self)");
 				writeBlockOpen(impl);
-				writeln(impl, body);
+				writeCodeLines(impl, bodyLines);
 				writeBlockClose(impl);
 				writeln(impl, "return self;");
 			}
 			else
 			{
-				writeln(impl, body);
+				writeCodeLines(impl, bodyLines);
 			}
 			
 		}
@@ -187,6 +187,25 @@ public class CodeWriter
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	private void writeCodeLines(WriteDestination dest, List<String> lines)
+	{
+		for (String line : lines)
+		{
+			if (line.equals("{"))
+			{
+				writeBlockOpen(impl);
+			}
+			else if (line.equals("}"))
+			{
+				writeBlockClose(impl);
+			}
+			else
+			{
+				impl.writeln(line);
+			}
 		}
 	}
 
