@@ -128,23 +128,60 @@ public class CodeWriter
 		else
 		{
 			boolean isStatic = (modifierFlags & TopLevelItemRecord.ASDoc_Static) != 0;
-			write(hdr, isStatic ? "+" : "-");
-			write(hdr, "(" + CodeHelper.type(returnType) + ")");
-			write(hdr, CodeHelper.identifier(functionRecord.getName()));
+			write(isStatic ? "+" : "-");
+			write("(" + CodeHelper.type(returnType) + ")");
+			write(CodeHelper.identifier(functionRecord.getName()));
 			
 			List<DeclRecord> parameters = functionRecord.getParameters();
 			int paramIndex = 0;
 			for (DeclRecord param : parameters)
 			{
 				CodeHelper.writeMethodParam(hdr, param);
+				CodeHelper.writeMethodParam(impl, param);
 				if (++paramIndex < parameters.size())
-					write(hdr, " ");
+				{
+					write(" ");
+				}
 			}
 			
 			writeln(hdr, ";");
+			writeln(impl);
+			
+			writeBlockOpen(impl);
+			writeBlockClose(impl);
 		}
 	}
 
+	private void write(String line)
+	{
+		write(hdr, line);
+		write(impl, line);
+	}
+	
+	private void writeln(String line)
+	{
+		writeln(hdr, line);
+		writeln(impl, line);
+	}
+	
+	private void writeln()
+	{
+		writeln(hdr);
+		writeln(impl);
+	}
+	
+	private void writeBlockOpen()
+	{
+		writeBlockOpen(hdr);
+		writeBlockOpen(impl);
+	}
+	
+	private void writeBlockClose()
+	{
+		writeBlockClose(hdr);
+		writeBlockClose(impl);
+	}
+	
 	private void write(WriteDestination dest, String line)
 	{
 		dest.write(line);
