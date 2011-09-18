@@ -3,8 +3,19 @@ package block;
 import java.util.ArrayList;
 import java.util.List;
 
+import block.processors.LineProcessor;
+import block.processors.StringLiteralProcessor;
+
 public class BlockParser
 {
+	private List<LineProcessor> processors;
+	
+	public BlockParser()
+	{
+		processors = new ArrayList<LineProcessor>();
+		processors.add(new StringLiteralProcessor());
+	}
+	
 	public List<String> parse(String body)
 	{
 		BlockIterator iter = new BlockIterator(body);
@@ -12,22 +23,20 @@ public class BlockParser
 		List<String> lines = new ArrayList<String>();
 		while (iter.hasNext())
 		{
-			lines.add(iter.next());
+			String line = iter.next();
+			lines.add(process(line));
 		}
 		
 		return lines;
 	}
-	
-	private String createLine(String line, int tabs)
+
+	private String process(String line)
 	{
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < tabs; i++)
+		for (LineProcessor proc : processors)
 		{
-			result.append("\t");
+			line = proc.process(line);
 		}
-		result.append(line);
-		result.append("\n");
 		
-		return result.toString();
+		return line;
 	}
 }
