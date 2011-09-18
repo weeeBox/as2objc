@@ -18,21 +18,6 @@ public class PackageProcessor extends TreeElementProcessor
 	@Override
 	public void process(TreeIterator iter, Tree current) 
 	{
-		StringBuilder nameBuffer = new StringBuilder();
-		Tree element;
-		do
-		{
-			element = iter.next();
-			if (TreeHelper.isIdentifier(element))
-			{
-				nameBuffer.append(element);
-			}
-			else if (TreeHelper.isDot(element))
-			{
-				nameBuffer.append('.');
-			}
-			
-		}
-		while (!TreeHelper.isLCurly(element));
+		String identifier = ProcessorHelper.identifier(iter);
 	}
 }

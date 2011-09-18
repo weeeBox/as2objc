@@ -18,14 +18,11 @@ public class ClassProcessor extends TreeElementProcessor {
 	public void process(TreeIterator iter, Tree current) 
 	{
 		String visiblity = getWriter().getVisiblityModifier().getName();
+		String name = ProcessorHelper.identifier(iter);
 		
 		Tree element = iter.next();
-		String name = element.getText();
-		
-		element = iter.next();
 		if (TreeHelper.isImplements(element))
 		{
-			
 		}
 	}
 
