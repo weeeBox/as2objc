@@ -148,62 +148,68 @@ public class CodeWriter
 			writeln(impl);
 			
 			writeBlockOpen(impl);
+			writeFunctionBody(functionRecord);
 			writeBlockClose(impl);
 		}
 	}
 
-	private void write(String line)
+	private void writeFunctionBody(FunctionRecord functionRecord)
+	{
+		
+	}
+
+	void write(String line)
 	{
 		write(hdr, line);
 		write(impl, line);
 	}
 	
-	private void writeln(String line)
+	void writeln(String line)
 	{
 		writeln(hdr, line);
 		writeln(impl, line);
 	}
 	
-	private void writeln()
+	void writeln()
 	{
 		writeln(hdr);
 		writeln(impl);
 	}
 	
-	private void writeBlockOpen()
+	void writeBlockOpen()
 	{
 		writeBlockOpen(hdr);
 		writeBlockOpen(impl);
 	}
 	
-	private void writeBlockClose()
+	void writeBlockClose()
 	{
 		writeBlockClose(hdr);
 		writeBlockClose(impl);
 	}
 	
-	private void write(WriteDestination dest, String line)
+	void write(WriteDestination dest, String line)
 	{
 		dest.write(line);
 	}
 
-	private void writeln(WriteDestination dest, String line)
+	void writeln(WriteDestination dest, String line)
 	{
 		dest.writeln(line);
 	}
 
-	private void writeln(WriteDestination dest)
+	void writeln(WriteDestination dest)
 	{
 		dest.writeln();
 	}
 
-	private void writeBlockOpen(WriteDestination dest)
+	void writeBlockOpen(WriteDestination dest)
 	{
 		dest.writeln("{");
 		dest.incTab();
 	}
 
-	private void writeBlockClose(WriteDestination dest)
+	void writeBlockClose(WriteDestination dest)
 	{
 		dest.decTab();
 		dest.writeln("}");
