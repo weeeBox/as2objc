@@ -14,6 +14,9 @@ public class CodeHelper
 	{
 		basicTypesLookup = new HashMap<String, String>();
 		basicTypesLookup.put("void", "void");
+		basicTypesLookup.put("int", "int");
+		basicTypesLookup.put("float", "float");
+		basicTypesLookup.put("double", "double");
 		basicTypesLookup.put("Boolean", "BOOL");
 	}
 	
@@ -29,7 +32,11 @@ public class CodeHelper
 	
 	public static String type(TextItem item)
 	{
-		String type = item.getText();
+		return type(item.getText());
+	}
+
+	public static String type(String type)
+	{
 		String basicType = findBasic(type);
 		return basicType == null ? type + "*" : basicType;
 	}
