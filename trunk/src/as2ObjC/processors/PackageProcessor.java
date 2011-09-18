@@ -6,6 +6,7 @@ import flexprettyprint.handlers.AS3_exParser;
 
 import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
+import as2ObjC.code.AS3CodeVisitor;
 import as2ObjC.lang.AS3Identifier;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
@@ -13,9 +14,9 @@ import as2ObjC.tree.TreeIterator;
 
 public class PackageProcessor extends TreeElementProcessor 
 {
-	public PackageProcessor(ObjCWriter writer) 
+	public PackageProcessor(AS3CodeVisitor visitor) 
 	{
-		super(writer);
+		super(visitor);
 		registerWithTypes(AS3_exParser.PACKAGE);
 	}
 

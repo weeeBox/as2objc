@@ -2,27 +2,25 @@ package as2ObjC.processors;
 
 import org.antlr.runtime.tree.Tree;
 
-import flexprettyprint.handlers.AS3_exParser;
-
-import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
+import as2ObjC.code.AS3CodeVisitor;
 import as2ObjC.lang.AS3Identifier;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
+import flexprettyprint.handlers.AS3_exParser;
 
 public class ClassProcessor extends TreeElementProcessor
 {
 
-	public ClassProcessor(ObjCWriter writer)
+	public ClassProcessor(AS3CodeVisitor visitor)
 	{
-		super(writer);
+		super(visitor);
 		registerWithTypes(AS3_exParser.CLASS);
 	}
 
 	@Override
 	public void process(TreeIterator iter, Tree current)
 	{
-		String visiblity = getWriter().getVisiblityModifier().getName();
 		AS3Identifier name = ProcessorHelper.extractIdentifier(iter);
 
 		Tree element = iter.next();
@@ -31,8 +29,6 @@ public class ClassProcessor extends TreeElementProcessor
 		{
 			implement = ProcessorHelper.extractIdentifier(iter);
 		}
-
-		log(visiblity + " class " + name + (implement == null ? "" : " implements " + implement));
 	}
 
 }

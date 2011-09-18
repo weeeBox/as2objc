@@ -6,14 +6,15 @@ import flexprettyprint.handlers.AS3_exParser;
 
 import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
+import as2ObjC.code.AS3CodeVisitor;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
 
 public class BracesProcessor extends TreeElementProcessor
 {
-	public BracesProcessor(ObjCWriter writer)
+	public BracesProcessor(AS3CodeVisitor visitor)
 	{
-		super(writer);
+		super(visitor);
 		registerWithTypes(AS3_exParser.LCURLY, AS3_exParser.RCURLY);
 	}
 
@@ -22,11 +23,11 @@ public class BracesProcessor extends TreeElementProcessor
 	{
 		if (TreeHelper.isLCurly(current))
 		{
-			getWriter().curlyBraceOpened();
+			getVisitor().visitCurlyBraceOpen();
 		}
 		else if (TreeHelper.isRCurly(current))
 		{
-			getWriter().curlyBraceClosed();
+			getVisitor().visitCurlyBraceClosed();
 		}
 	}
 }
