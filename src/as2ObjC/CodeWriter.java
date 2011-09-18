@@ -4,19 +4,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import block.BlockParser;
-
 import actionscriptinfocollector.ASCollector;
 import actionscriptinfocollector.ClassRecord;
 import actionscriptinfocollector.DeclRecord;
 import actionscriptinfocollector.FunctionRecord;
-import actionscriptinfocollector.MetadataItem;
-import actionscriptinfocollector.ObjectPositionHolder;
 import actionscriptinfocollector.PropertyLine;
 import actionscriptinfocollector.TextItem;
 import actionscriptinfocollector.TopLevelItemRecord;
 import actionscriptinfocollector.text.BadLocationException;
 import actionscriptinfocollector.text.IDocument;
+import block.BlockParser;
 
 public class CodeWriter
 {
