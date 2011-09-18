@@ -25,7 +25,11 @@ public class ObjCWriter
 	private String filename;
 	private File outputDir;
 
+	/** Contains last found visiblity modifier */
 	private VisiblityModifier visiblityModifier;
+
+	/** Contains opened/closed curly braces ratio */
+	private int curlyBracesCounter;
 
 	private Map<Integer, TreeElementProcessor> processors;
 
@@ -47,6 +51,7 @@ public class ObjCWriter
 		registerProcessor(new ClassProcessor(this), AS3_exParser.CLASS);
 
 		registerProcessor(new VisiblityProcessor(this), AS3_exParser.PUBLIC, AS3_exParser.PRIVATE, AS3_exParser.PROTECTED);		
+		registerProcessor(new BracesProcessor(this), AS3_exParser.LCURLY, AS3_exParser.RCURLY);		
 	}
 	
 	private void registerProcessor(TreeElementProcessor processor, Integer... types)
@@ -75,7 +80,7 @@ public class ObjCWriter
 			{
 				processor.process(iterator, child);
 			}
-			System.out.println(TreeHelper.getTypeName(type));
+			log(TreeHelper.getTypeName(type));
 		}
 	}
 
@@ -94,12 +99,23 @@ public class ObjCWriter
 	/** Called from {@link TreeElementProcessor} when left curly brace is found */
 	public void curlyBraceOpened()
 	{
-		System.out.println("{");
+		log("{");
+		curlyBracesCounter++;
 	}
 	
 	/** Called from {@link TreeElementProcessor} when right curly brace is found */
 	public void curlyBraceClosed()
 	{
-		System.out.println("}");
+		curlyBracesCounter--;
+		log("}");
+	}
+	
+	public void log(String message)
+	{
+		for (int i = 0; i < curlyBracesCounter; i++)
+		{
+			System.out.print('\t');
+		}
+		System.out.println(message);
 	}
 }

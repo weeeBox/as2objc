@@ -27,7 +27,7 @@ public class ClassProcessor extends TreeElementProcessor {
 			implement = ProcessorHelper.identifier(iter);
 		}
 		
-		System.out.println(visiblity + " class " + name + (implement == null ? "" : " implements " + implement));
+		log(visiblity + " class " + name + (implement == null ? "" : " implements " + implement));
 	}
 
 }
