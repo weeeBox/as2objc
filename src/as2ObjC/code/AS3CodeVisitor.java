@@ -1,7 +1,7 @@
 package as2ObjC.code;
 
-import as2ObjC.lang.AS3IdentifierElement;
 import as2ObjC.lang.AS3Visiblity;
+import as2ObjC.lang.base.AS3IdentifierElement;
 
 public interface AS3CodeVisitor
 {

@@ -5,8 +5,8 @@ import org.antlr.runtime.tree.Tree;
 import as2ObjC.TreeElementProcessor;
 import as2ObjC.code.AS3CodeVisitor;
 import as2ObjC.lang.AS3Identifier;
-import as2ObjC.lang.AS3IdentifierElement;
 import as2ObjC.lang.AS3ImportDeclaration;
+import as2ObjC.lang.base.AS3IdentifierElement;
 import as2ObjC.tree.TreeIterator;
 import flexprettyprint.handlers.AS3_exParser;
 
