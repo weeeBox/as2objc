@@ -4,13 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import block.BlockParser;
+
 import actionscriptinfocollector.ASCollector;
 import actionscriptinfocollector.ClassRecord;
 import actionscriptinfocollector.DeclRecord;
 import actionscriptinfocollector.FunctionRecord;
+import actionscriptinfocollector.MetadataItem;
+import actionscriptinfocollector.ObjectPositionHolder;
 import actionscriptinfocollector.PropertyLine;
 import actionscriptinfocollector.TextItem;
 import actionscriptinfocollector.TopLevelItemRecord;
+import actionscriptinfocollector.text.BadLocationException;
+import actionscriptinfocollector.text.IDocument;
 
 public class CodeWriter
 {
@@ -19,8 +25,11 @@ public class CodeWriter
 	private WriteDestination hdr;
 	private WriteDestination impl;
 
-	public CodeWriter(String moduleName, File outputDir) throws IOException
+	private IDocument doc;
+	
+	public CodeWriter(IDocument doc, String moduleName, File outputDir) throws IOException
 	{
+		this.doc = doc;
 		this.moduleName = moduleName;
 
 		hdr = new WriteDestination(new File(outputDir, moduleName + ".h"));
@@ -121,41 +130,64 @@ public class CodeWriter
 		TextItem returnType = functionRecord.getReturnType();
 		boolean isConstructor = returnType == null;
 
-		if (isConstructor)
+		boolean isStatic = (modifierFlags & TopLevelItemRecord.ASDoc_Static) != 0;
+		write(isStatic ? "+" : "-");
+		write("(" + (isConstructor ? "id" : CodeHelper.type(returnType)) + ")");
+		write(CodeHelper.identifier(functionRecord.getName()));
+		
+		List<DeclRecord> parameters = functionRecord.getParameters();
+		int paramIndex = 0;
+		for (DeclRecord param : parameters)
 		{
-			System.out.println("Skip constructor: " + CodeHelper.identifier(functionRecord.getName()));
-		}
-		else
-		{
-			boolean isStatic = (modifierFlags & TopLevelItemRecord.ASDoc_Static) != 0;
-			write(isStatic ? "+" : "-");
-			write("(" + CodeHelper.type(returnType) + ")");
-			write(CodeHelper.identifier(functionRecord.getName()));
-			
-			List<DeclRecord> parameters = functionRecord.getParameters();
-			int paramIndex = 0;
-			for (DeclRecord param : parameters)
+			CodeHelper.writeMethodParam(hdr, param);
+			CodeHelper.writeMethodParam(impl, param);
+			if (++paramIndex < parameters.size())
 			{
-				CodeHelper.writeMethodParam(hdr, param);
-				CodeHelper.writeMethodParam(impl, param);
-				if (++paramIndex < parameters.size())
-				{
-					write(" ");
-				}
+				write(" ");
 			}
-			
-			writeln(hdr, ";");
-			writeln(impl);
-			
-			writeBlockOpen(impl);
-			writeFunctionBody(functionRecord);
-			writeBlockClose(impl);
 		}
+		
+		writeln(hdr, ";");
+		writeln(impl);
+		
+		writeBlockOpen(impl);
+		writeFunctionBody(functionRecord, isConstructor);
+		writeBlockClose(impl);
 	}
 
-	private void writeFunctionBody(FunctionRecord functionRecord)
+	private void writeFunctionBody(FunctionRecord functionRecord, boolean isConstructor)
 	{
+		int startPos = functionRecord.getStartPos();
+		int endPos = functionRecord.getEndPos();
 		
+		try
+		{
+			String functionText = doc.get(startPos, endPos - startPos);
+			int blockStart = functionText.indexOf('{') + 1;
+			int blockEnd = functionText.lastIndexOf('}');
+			BlockParser parser = new BlockParser();
+			String body = parser.parse(functionText.substring(blockStart, blockEnd));
+			
+			if (isConstructor)
+			{
+				writeln(impl, "self = [super init];");
+				writeln(impl, "if (self)");
+				writeBlockOpen(impl);
+				writeln(impl, body);
+				writeBlockClose(impl);
+				writeln(impl, "return self;");
+			}
+			else
+			{
+				writeln(impl, body);
+			}
+			
+		}
+		catch (BadLocationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	void write(String line)
