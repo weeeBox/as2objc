@@ -1,4 +1,6 @@
-package as2ObjC.lang;
+package as2ObjC.lang.base;
+
+import as2ObjC.lang.AS3Identifier;
 
 public class AS3IdentifierElement
 {
@@ -13,5 +15,4 @@ public class AS3IdentifierElement
 	{
 		return identifier;
 	}
-
 }
