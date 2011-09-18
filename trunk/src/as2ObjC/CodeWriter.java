@@ -7,7 +7,6 @@ import java.util.List;
 import actionscriptinfocollector.ASCollector;
 import actionscriptinfocollector.ClassRecord;
 import actionscriptinfocollector.DeclRecord;
-import actionscriptinfocollector.FunctionRecord;
 import actionscriptinfocollector.PropertyLine;
 import actionscriptinfocollector.TextItem;
 
@@ -15,9 +14,8 @@ public class CodeWriter
 {
 	private String moduleName;
 
-	private WriteDestination headerDest;
-	private WriteDestination implementationDest;
-	private WriteDestination currentDestination;
+	private WriteDestination hdr;
+	private WriteDestination impl;
 
 	public CodeWriter(String moduleName, File outputDir) throws IOException
 	{
@@ -25,15 +23,15 @@ public class CodeWriter
 
 		File headerFile = new File(outputDir, moduleName + ".h");
 		File implementatinFile = new File(outputDir, moduleName + ".mm");
-		headerDest = new WriteDestination(headerFile);
-		implementationDest = new WriteDestination(implementatinFile);
+		hdr = new WriteDestination(headerFile);
+		impl = new WriteDestination(implementatinFile);
 	}
 
 	public void write(List<ASCollector> collectors) throws IOException
 	{
 		try
 		{
-			CodeHelper.writeImport(implementationDest, moduleName);
+			CodeHelper.writeImport(impl, moduleName);
 
 			for (ASCollector collector : collectors)
 			{
@@ -42,8 +40,8 @@ public class CodeWriter
 		}
 		finally
 		{
-			headerDest.close();
-			implementationDest.close();
+			hdr.close();
+			impl.close();
 		}
 	}
 
@@ -58,25 +56,22 @@ public class CodeWriter
 
 	private void write(ClassRecord classRecord)
 	{
-		writeClassHeader(classRecord);
-		writeClassImplementation(classRecord);
-	}
-
-	private void writeClassHeader(ClassRecord classRecord)
-	{
-		setWriteToHeader();
-
-		write("@interface " + CodeHelper.identifier(classRecord.getName()));
+		write(hdr, "@interface " + CodeHelper.identifier(classRecord.getName()));
 
 		TextItem extendsItem = classRecord.getExtends();
 		String extendsName = extendsItem == null ? "NSObject" : CodeHelper.identifier(extendsItem);
-		write(" : " + extendsName);
-		writeln();
-
+		write(hdr, " : " + extendsName);
+		writeln(hdr);
+		
+		writeln(impl, "@implementation " + CodeHelper.identifier(classRecord.getName()));
+		
 		writeHeaderClassBody(classRecord);
-
-		writeln("@end");
-		writeln();
+		
+		writeln(hdr, "@end");
+		writeln(hdr);
+		
+		writeln(impl, "@end");
+		writeln(impl);
 	}
 
 	private void writeHeaderClassBody(ClassRecord classRecord)
@@ -85,12 +80,12 @@ public class CodeWriter
 
 		if (properties.size() > 0)
 		{
-			writeBlockOpen();
+			writeBlockOpen(hdr);
 			for (PropertyLine propertyLine : properties)
 			{
 				writeHeaderProperty(propertyLine);
 			}
-			writeBlockClose();
+			writeBlockClose(hdr);
 		}
 	}
 
@@ -105,67 +100,43 @@ public class CodeWriter
 
 	private void writeHeaderDeclRecord(DeclRecord declRecord)
 	{
-		writeln(CodeHelper.type(declRecord.getType()) + " " + CodeHelper.identifier(declRecord.getName()) + ";");
+		writeln(hdr, CodeHelper.type(declRecord.getType()) + " " + CodeHelper.identifier(declRecord.getName()) + ";");
 	}
 
-	private void writeClassImplementation(ClassRecord classRecord)
+	private void write(WriteDestination dest, String line)
 	{
-		setWriteToImplementation();
-
-		writeln("@implementation " + CodeHelper.identifier(classRecord.getName()));
-		writeln("@end");
-		writeln();
+		dest.write(line);
 	}
-
-	private void write(String line)
+	
+	private void writeln(WriteDestination dest, String line)
 	{
-		currentDestination.write(line);
+		dest.writeln(line);
 	}
-
-	private void writeln(String line)
+	
+	private void writeln(WriteDestination dest)
 	{
-		currentDestination.writeln(line);
+		dest.writeln();
 	}
-
-	private void writeln()
+	
+	private void incTab(WriteDestination dest)
 	{
-		currentDestination.writeln();
+		dest.incTab();
 	}
-
-	private void writeBlockOpen()
+	
+	private void decTab(WriteDestination dest)
 	{
-		writeln("{");
-		incTab();
+		dest.decTab();
 	}
-
-	private void writeBlockClose()
+	
+	private void writeBlockOpen(WriteDestination dest)
 	{
-		decTab();
-		writeln("}");
+		dest.writeln("{");
+		dest.incTab();
 	}
-
-	private void incTab()
+	
+	private void writeBlockClose(WriteDestination dest)
 	{
-		currentDestination.incTab();
-	}
-
-	private void decTab()
-	{
-		currentDestination.decTab();
-	}
-
-	private void setWriteToHeader()
-	{
-		setWriteDestination(headerDest);
-	}
-
-	private void setWriteToImplementation()
-	{
-		setWriteDestination(implementationDest);
-	}
-
-	private void setWriteDestination(WriteDestination dest)
-	{
-		currentDestination = dest;
+		dest.decTab();
+		dest.writeln("}");
 	}
 }
