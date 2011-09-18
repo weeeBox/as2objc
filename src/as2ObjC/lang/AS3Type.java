@@ -1,11 +1,16 @@
 package as2ObjC.lang;
 
-import as2ObjC.lang.base.AS3NamedElement;
-
-public class AS3Type extends AS3NamedElement
+public class AS3Type
 {
+	private String name;
+	
 	public AS3Type(String name)
 	{
-		super(name);
+		this.name = name;
+	}
+	
+	public String getName()
+	{
+		return name;
 	}
 }
