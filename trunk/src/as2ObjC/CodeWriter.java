@@ -63,7 +63,7 @@ public class CodeWriter
 		
 		writeln(impl, "@implementation " + CodeHelper.identifier(classRecord.getName()));
 		
-		writeHeaderClassBody(classRecord);
+		writeClassBody(classRecord);
 		
 		writeln(hdr, "@end");
 		writeln(hdr);
@@ -72,7 +72,7 @@ public class CodeWriter
 		writeln(impl);
 	}
 
-	private void writeHeaderClassBody(ClassRecord classRecord)
+	private void writeClassBody(ClassRecord classRecord)
 	{
 		List<PropertyLine> properties = classRecord.getProperties();
 
@@ -81,22 +81,22 @@ public class CodeWriter
 			writeBlockOpen(hdr);
 			for (PropertyLine propertyLine : properties)
 			{
-				writeHeaderProperty(propertyLine);
+				writeProperty(propertyLine);
 			}
 			writeBlockClose(hdr);
 		}
 	}
 
-	private void writeHeaderProperty(PropertyLine propertyLine)
+	private void writeProperty(PropertyLine propertyLine)
 	{
 		List<DeclRecord> properties = propertyLine.getProperties();
 		for (DeclRecord declRecord : properties)
 		{
-			writeHeaderDeclRecord(declRecord);
+			writeDeclRecord(declRecord);
 		}
 	}
 
-	private void writeHeaderDeclRecord(DeclRecord declRecord)
+	private void writeDeclRecord(DeclRecord declRecord)
 	{
 		writeln(hdr, CodeHelper.type(declRecord.getType()) + " " + CodeHelper.identifier(declRecord.getName()) + ";");
 	}
