@@ -12,10 +12,9 @@ import as2ObjC.processors.BracesProcessor;
 import as2ObjC.processors.ClassProcessor;
 import as2ObjC.processors.ImportProcessor;
 import as2ObjC.processors.PackageProcessor;
+import as2ObjC.processors.VarProcessor;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
-
-import flexprettyprint.handlers.AS3_exParser;
 
 public class ObjCWriter
 {
@@ -31,7 +30,7 @@ public class ObjCWriter
 	/** Contains opened/closed curly braces ratio */
 	private int curlyBracesCounter;
 
-	private Map<Integer, TreeElementProcessor> processors;
+	private Map<Integer, TreeElementProcessor> processors = new HashMap<Integer, TreeElementProcessor>();
 
 	public ObjCWriter(String filename, File outputDir)
 	{
@@ -44,19 +43,18 @@ public class ObjCWriter
 
 	private void initProcessors()
 	{
-		processors = new HashMap<Integer, TreeElementProcessor>();
+		new PackageProcessor(this);
+		new ImportProcessor(this);
+		new ClassProcessor(this);
 
-		registerProcessor(new PackageProcessor(this), AS3_exParser.PACKAGE);
-		registerProcessor(new ImportProcessor(this), AS3_exParser.IMPORT);
-		registerProcessor(new ClassProcessor(this), AS3_exParser.CLASS);
-
-		registerProcessor(new VisiblityProcessor(this), AS3_exParser.PUBLIC, AS3_exParser.PRIVATE, AS3_exParser.PROTECTED);		
-		registerProcessor(new BracesProcessor(this), AS3_exParser.LCURLY, AS3_exParser.RCURLY);		
+		new VisiblityProcessor(this);		
+		new BracesProcessor(this);
+		new VarProcessor(this);
 	}
 	
-	private void registerProcessor(TreeElementProcessor processor, Integer... types)
+	public void registerProcessor(TreeElementProcessor processor, int... types)
 	{
-		for (Integer type : types)
+		for (int type : types)
 		{
 			processors.put(type, processor);
 		}

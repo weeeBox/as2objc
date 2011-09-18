@@ -13,6 +13,11 @@ public abstract class TreeElementProcessor
 		this.writer = writer;
 	}
 	
+	protected void registerWithTypes(int... types)
+	{
+		getWriter().registerProcessor(this, types);
+	}
+	
 	protected ObjCWriter getWriter() 
 	{
 		return writer;

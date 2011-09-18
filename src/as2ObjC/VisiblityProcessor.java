@@ -2,6 +2,8 @@ package as2ObjC;
 
 import org.antlr.runtime.tree.Tree;
 
+import flexprettyprint.handlers.AS3_exParser;
+
 import as2ObjC.lang.VisiblityModifier;
 import as2ObjC.tree.TreeIterator;
 
@@ -10,6 +12,7 @@ public class VisiblityProcessor extends TreeElementProcessor
 	public VisiblityProcessor(ObjCWriter writer)
 	{
 		super(writer);
+		registerWithTypes(AS3_exParser.PUBLIC, AS3_exParser.PRIVATE, AS3_exParser.PROTECTED);
 	}
 
 	@Override
