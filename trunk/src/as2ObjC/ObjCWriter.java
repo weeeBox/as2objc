@@ -58,8 +58,7 @@ public class ObjCWriter
 
 	public void write(CommonTree tree)
 	{
-		TreeIterator iterator = new TreeIterator(tree);
-		int count = 0;
+		TreeIterator iterator = new TreeIterator(tree);		
 		while (iterator.hasNext())
 		{
 			Tree child = iterator.next();
@@ -70,11 +69,7 @@ public class ObjCWriter
 			{
 				processor.process(iterator, child);
 			}
-			else
-			{
-				if (++count < 25)
-					System.out.println("Processor not found for type: " + TreeHelper.getTypeName(type));
-			}
+			System.out.println(TreeHelper.getTypeName(type));
 		}
 	}
 

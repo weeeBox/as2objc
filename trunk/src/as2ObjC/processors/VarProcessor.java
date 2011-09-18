@@ -6,18 +6,19 @@ import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
 import as2ObjC.tree.TreeIterator;
 
+public class VarProcessor extends TreeElementProcessor
+{
 
-public class ImportProcessor extends TreeElementProcessor {
-
-	public ImportProcessor(ObjCWriter writer) 
+	public VarProcessor(ObjCWriter writer)
 	{
 		super(writer);
+		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public void process(TreeIterator iter, Tree current) 
+	public void process(TreeIterator iter, Tree current)
 	{
-		String identifier = ProcessorHelper.identifier(iter);
+		
 	}
 
 }
