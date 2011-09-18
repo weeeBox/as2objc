@@ -21,10 +21,8 @@ public class CodeWriter
 	{
 		this.moduleName = moduleName;
 
-		File headerFile = new File(outputDir, moduleName + ".h");
-		File implementatinFile = new File(outputDir, moduleName + ".mm");
-		hdr = new WriteDestination(headerFile);
-		impl = new WriteDestination(implementatinFile);
+		hdr = new WriteDestination(new File(outputDir, moduleName + ".h"));
+		impl = new WriteDestination(new File(outputDir, moduleName + ".mm"));
 	}
 
 	public void write(List<ASCollector> collectors) throws IOException
