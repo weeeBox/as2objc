@@ -3,6 +3,7 @@ package as2ObjC;
 import java.util.HashMap;
 import java.util.Map;
 
+import actionscriptinfocollector.DeclRecord;
 import actionscriptinfocollector.TextItem;
 
 public class CodeHelper
@@ -12,6 +13,7 @@ public class CodeHelper
 	static
 	{
 		basicTypesLookup = new HashMap<String, String>();
+		basicTypesLookup.put("void", "void");
 		basicTypesLookup.put("Boolean", "BOOL");
 	}
 	
@@ -40,5 +42,15 @@ public class CodeHelper
 	public static void writeImport(WriteDestination dest, String name)
 	{
 		dest.writeln("#import " + literal(name + ".h"));
+	}
+	
+	public static void writeDeclaration(WriteDestination dest, DeclRecord record)
+	{
+		dest.write(CodeHelper.type(record.getType()) + " " + CodeHelper.identifier(record.getName()));
+	}
+	
+	public static void writeMethodParam(WriteDestination dest, DeclRecord record)
+	{
+		dest.write(":(" + CodeHelper.type(record.getType()) + ")" + CodeHelper.identifier(record.getName()));
 	}
 }
