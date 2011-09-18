@@ -6,6 +6,7 @@ import flexprettyprint.handlers.AS3_exParser;
 
 import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
+import as2ObjC.lang.AS3Identifier;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
 
@@ -22,10 +23,10 @@ public class ClassProcessor extends TreeElementProcessor
 	public void process(TreeIterator iter, Tree current)
 	{
 		String visiblity = getWriter().getVisiblityModifier().getName();
-		String name = ProcessorHelper.extractIdentifier(iter);
+		AS3Identifier name = ProcessorHelper.extractIdentifier(iter);
 
 		Tree element = iter.next();
-		String implement = null;
+		AS3Identifier implement = null;
 		if (TreeHelper.isImplements(element))
 		{
 			implement = ProcessorHelper.extractIdentifier(iter);

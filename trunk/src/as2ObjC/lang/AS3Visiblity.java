@@ -1,6 +1,6 @@
 package as2ObjC.lang;
 
-public enum VisiblityModifier 
+public enum AS3Visiblity 
 {
 	PUBLIC("public"),
 	PRIVATE("private"),
@@ -8,7 +8,7 @@ public enum VisiblityModifier
 	
 	private String name;
 	
-	private VisiblityModifier(String name)
+	private AS3Visiblity(String name)
 	{
 		this.name = name;
 	}

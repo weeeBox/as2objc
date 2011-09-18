@@ -7,28 +7,24 @@ import flexprettyprint.handlers.AS3_exParser;
 import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
 import as2ObjC.lang.AS3Identifier;
-import as2ObjC.lang.AS3Type;
 import as2ObjC.tree.TreeIterator;
 
-public class VarProcessor extends TreeElementProcessor
+public class FunctionProcessor extends TreeElementProcessor
 {
 
-	public VarProcessor(ObjCWriter writer)
+	public FunctionProcessor(ObjCWriter writer)
 	{
 		super(writer);
-		registerWithTypes(AS3_exParser.VAR);
+		registerWithTypes(AS3_exParser.FUNCTION);
 	}
 
 	@Override
 	public void process(TreeIterator iter, Tree current)
 	{
-		String visiblity = getWriter().getVisiblityModifier().getName();
-		
 		AS3Identifier name = ProcessorHelper.extractIdentifier(iter);
-		ProcessorHelper.skipAndCheck(iter, AS3_exParser.COLON);
-		AS3Type type = ProcessorHelper.extractType(iter);
-		
-		log(visiblity + " " + type + " " + name);
+		log("function " + name);
+		ProcessorHelper.skipAndCheck(iter, AS3_exParser.LPAREN);
+		ProcessorHelper.skipAndCheck(iter, AS3_exParser.RPAREN);
 	}
 
 }

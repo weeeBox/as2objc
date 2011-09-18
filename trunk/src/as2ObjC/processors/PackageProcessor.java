@@ -6,6 +6,7 @@ import flexprettyprint.handlers.AS3_exParser;
 
 import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
+import as2ObjC.lang.AS3Identifier;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
 
@@ -21,6 +22,6 @@ public class PackageProcessor extends TreeElementProcessor
 	@Override
 	public void process(TreeIterator iter, Tree current) 
 	{
-		String identifier = ProcessorHelper.extractIdentifier(iter);
+		AS3Identifier identifier = ProcessorHelper.extractIdentifier(iter);
 	}
 }

@@ -7,9 +7,10 @@ import java.util.Map;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
-import as2ObjC.lang.VisiblityModifier;
+import as2ObjC.lang.AS3Visiblity;
 import as2ObjC.processors.BracesProcessor;
 import as2ObjC.processors.ClassProcessor;
+import as2ObjC.processors.FunctionProcessor;
 import as2ObjC.processors.ImportProcessor;
 import as2ObjC.processors.PackageProcessor;
 import as2ObjC.processors.VarProcessor;
@@ -25,7 +26,7 @@ public class ObjCWriter
 	private File outputDir;
 
 	/** Contains last found visiblity modifier */
-	private VisiblityModifier visiblityModifier;
+	private AS3Visiblity visiblityModifier;
 
 	/** Contains opened/closed curly braces ratio */
 	private int curlyBracesCounter;
@@ -46,10 +47,10 @@ public class ObjCWriter
 		new PackageProcessor(this);
 		new ImportProcessor(this);
 		new ClassProcessor(this);
-
 		new VisiblityProcessor(this);		
 		new BracesProcessor(this);
 		new VarProcessor(this);
+		new FunctionProcessor(this);
 	}
 	
 	public void registerProcessor(TreeElementProcessor processor, int... types)
@@ -62,7 +63,7 @@ public class ObjCWriter
 
 	private void initData()
 	{
-		setVisiblityModifier(VisiblityModifier.PUBLIC);
+		setVisiblityModifier(AS3Visiblity.PUBLIC);
 	}
 
 	public void write(CommonTree tree)
@@ -86,13 +87,13 @@ public class ObjCWriter
 	}
 
 	/** Called from {@link TreeElementProcessor} when visiblity modificator found */
-	public void setVisiblityModifier(VisiblityModifier visiblityModifier)
+	public void setVisiblityModifier(AS3Visiblity visiblityModifier)
 	{
 		this.visiblityModifier = visiblityModifier;
 	}
 
 	/** Returns last found visiblity modificator */
-	public VisiblityModifier getVisiblityModifier()
+	public AS3Visiblity getVisiblityModifier()
 	{
 		return visiblityModifier;
 	}

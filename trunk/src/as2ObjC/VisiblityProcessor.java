@@ -4,7 +4,7 @@ import org.antlr.runtime.tree.Tree;
 
 import flexprettyprint.handlers.AS3_exParser;
 
-import as2ObjC.lang.VisiblityModifier;
+import as2ObjC.lang.AS3Visiblity;
 import as2ObjC.tree.TreeIterator;
 
 public class VisiblityProcessor extends TreeElementProcessor
@@ -18,15 +18,15 @@ public class VisiblityProcessor extends TreeElementProcessor
 	@Override
 	public void process(TreeIterator iter, Tree current)
 	{
-		VisiblityModifier visiblityModifier;
+		AS3Visiblity visiblityModifier;
 		
 		String visiblity = current.getText();
 		if (visiblity.equals("private"))
-			visiblityModifier = VisiblityModifier.PRIVATE;
+			visiblityModifier = AS3Visiblity.PRIVATE;
 		else if (visiblity.equals("protected"))
-			visiblityModifier = VisiblityModifier.PROTECTED;
+			visiblityModifier = AS3Visiblity.PROTECTED;
 		else
-			visiblityModifier = VisiblityModifier.PUBLIC;
+			visiblityModifier = AS3Visiblity.PUBLIC;
 		
 		getWriter().setVisiblityModifier(visiblityModifier);
 	}

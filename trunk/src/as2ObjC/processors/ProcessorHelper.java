@@ -2,6 +2,8 @@ package as2ObjC.processors;
 
 import org.antlr.runtime.tree.Tree;
 
+import as2ObjC.lang.AS3Identifier;
+import as2ObjC.lang.AS3Type;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
 
@@ -10,13 +12,13 @@ public class ProcessorHelper
 	///////////////////////////////////////////////////////////////////////
 	// Extractor
 	
-	public static String extractType(TreeIterator iter)
+	public static AS3Type extractType(TreeIterator iter)
 	{
 		String name = extractIdentifier(iter.next());
-		return name;
+		return new AS3Type(name);
 	}
 	
-	public static String extractIdentifier(TreeIterator iter)
+	public static AS3Identifier extractIdentifier(TreeIterator iter)
 	{
 		StringBuilder result = new StringBuilder();
 		
@@ -38,7 +40,7 @@ public class ProcessorHelper
 			}
 		}
 		
-		return result.toString();
+		return new AS3Identifier(result.toString());
 	}
 
 	private static String extractIdentifier(Tree element)
