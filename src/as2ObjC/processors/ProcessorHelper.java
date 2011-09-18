@@ -24,6 +24,7 @@ public class ProcessorHelper
 			}	
 			else
 			{
+				iter.prev();
 				break;
 			}
 		}

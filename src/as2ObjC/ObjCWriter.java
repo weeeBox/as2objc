@@ -8,6 +8,7 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 import as2ObjC.lang.VisiblityModifier;
+import as2ObjC.processors.BracesProcessor;
 import as2ObjC.processors.ClassProcessor;
 import as2ObjC.processors.ImportProcessor;
 import as2ObjC.processors.PackageProcessor;
@@ -41,14 +42,19 @@ public class ObjCWriter
 	{
 		processors = new HashMap<Integer, TreeElementProcessor>();
 
-		processors.put(AS3_exParser.PACKAGE, new PackageProcessor(this));
-		processors.put(AS3_exParser.IMPORT, new ImportProcessor(this));
-		processors.put(AS3_exParser.CLASS, new ClassProcessor(this));
+		registerProcessor(new PackageProcessor(this), AS3_exParser.PACKAGE);
+		registerProcessor(new ImportProcessor(this), AS3_exParser.IMPORT);
+		registerProcessor(new ClassProcessor(this), AS3_exParser.CLASS);
 
-		VisiblityProcessor visiblityProcessor = new VisiblityProcessor(this);
-		processors.put(AS3_exParser.PUBLIC, visiblityProcessor);
-		processors.put(AS3_exParser.PRIVATE, visiblityProcessor);
-		processors.put(AS3_exParser.PROTECTED, visiblityProcessor);
+		registerProcessor(new VisiblityProcessor(this), AS3_exParser.PUBLIC, AS3_exParser.PRIVATE, AS3_exParser.PROTECTED);		
+	}
+	
+	private void registerProcessor(TreeElementProcessor processor, Integer... types)
+	{
+		for (Integer type : types)
+		{
+			processors.put(type, processor);
+		}
 	}
 
 	private void initData()
@@ -73,13 +79,27 @@ public class ObjCWriter
 		}
 	}
 
+	/** Called from {@link TreeElementProcessor} when visiblity modificator found */
 	public void setVisiblityModifier(VisiblityModifier visiblityModifier)
 	{
 		this.visiblityModifier = visiblityModifier;
 	}
 
+	/** Returns last found visiblity modificator */
 	public VisiblityModifier getVisiblityModifier()
 	{
 		return visiblityModifier;
+	}
+
+	/** Called from {@link TreeElementProcessor} when left curly brace is found */
+	public void curlyBraceOpened()
+	{
+		System.out.println("{");
+	}
+	
+	/** Called from {@link TreeElementProcessor} when right curly brace is found */
+	public void curlyBraceClosed()
+	{
+		System.out.println("}");
 	}
 }
