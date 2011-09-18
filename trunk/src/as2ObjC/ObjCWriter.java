@@ -10,52 +10,48 @@ import org.antlr.runtime.tree.Tree;
 import as2ObjC.lang.VisiblityModifier;
 import as2ObjC.processors.ClassProcessor;
 import as2ObjC.processors.ImportProcessor;
-import as2ObjC.processors.NullProcessor;
 import as2ObjC.processors.PackageProcessor;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
 
-
-
 import flexprettyprint.handlers.AS3_exParser;
 
-
-public class ObjCWriter 
+public class ObjCWriter
 {
 	private WriteDestination header;
 	private WriteDestination implementation;
-	
+
 	private String filename;
 	private File outputDir;
 
 	private VisiblityModifier visiblityModifier;
-	
+
 	private Map<Integer, TreeElementProcessor> processors;
-	
-	public ObjCWriter(String filename, File outputDir) 
+
+	public ObjCWriter(String filename, File outputDir)
 	{
 		this.filename = filename;
 		this.outputDir = outputDir;
-		
+
 		initProcessors();
 		initData();
 	}
 
-	private void initProcessors() 
+	private void initProcessors()
 	{
 		processors = new HashMap<Integer, TreeElementProcessor>();
-		
-		NullProcessor nullProcessor = new NullProcessor(this);
+
 		processors.put(AS3_exParser.PACKAGE, new PackageProcessor(this));
 		processors.put(AS3_exParser.IMPORT, new ImportProcessor(this));
 		processors.put(AS3_exParser.CLASS, new ClassProcessor(this));
-		
-		processors.put(AS3_exParser.PUBLIC, nullProcessor);
-		processors.put(AS3_exParser.PRIVATE, nullProcessor);
-		processors.put(AS3_exParser.PROTECTED, nullProcessor);
+
+		VisiblityProcessor visiblityProcessor = new VisiblityProcessor(this);
+		processors.put(AS3_exParser.PUBLIC, visiblityProcessor);
+		processors.put(AS3_exParser.PRIVATE, visiblityProcessor);
+		processors.put(AS3_exParser.PROTECTED, visiblityProcessor);
 	}
-	
-	private void initData() 
+
+	private void initData()
 	{
 		setVisiblityModifier(VisiblityModifier.PUBLIC);
 	}
@@ -64,11 +60,11 @@ public class ObjCWriter
 	{
 		TreeIterator iterator = new TreeIterator(tree);
 		int count = 0;
-		while (iterator.hasNext()) 
+		while (iterator.hasNext())
 		{
 			Tree child = iterator.next();
 			int type = child.getType();
-			
+
 			TreeElementProcessor processor = processors.get(type);
 			if (processor != null)
 			{
@@ -76,17 +72,18 @@ public class ObjCWriter
 			}
 			else
 			{
-				if (++count < 25) System.out.println("Processor not found for type: " + TreeHelper.getTypeName(type));
+				if (++count < 25)
+					System.out.println("Processor not found for type: " + TreeHelper.getTypeName(type));
 			}
 		}
 	}
 
-	public void setVisiblityModifier(VisiblityModifier visiblityModifier) 
+	public void setVisiblityModifier(VisiblityModifier visiblityModifier)
 	{
 		this.visiblityModifier = visiblityModifier;
 	}
-	
-	public VisiblityModifier getVisiblityModifier() 
+
+	public VisiblityModifier getVisiblityModifier()
 	{
 		return visiblityModifier;
 	}
