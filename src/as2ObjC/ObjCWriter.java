@@ -78,7 +78,10 @@ public class ObjCWriter
 			{
 				processor.process(iterator, child);
 			}
-			log(TreeHelper.getTypeName(type));
+			else
+			{
+				log("AS3_exParser." + TreeHelper.getTypeName(type));
+			}
 		}
 	}
 
