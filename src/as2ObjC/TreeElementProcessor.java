@@ -2,30 +2,27 @@ package as2ObjC;
 
 import org.antlr.runtime.tree.Tree;
 
+import as2ObjC.code.AS3CodeVisitor;
+import as2ObjC.processors.ProcessorsRegistry;
 import as2ObjC.tree.TreeIterator;
 
 public abstract class TreeElementProcessor 
 {
-	private ObjCWriter writer;
+	private AS3CodeVisitor visitor;
 	
-	public TreeElementProcessor(ObjCWriter writer) 
+	public TreeElementProcessor(AS3CodeVisitor visitor) 
 	{
-		this.writer = writer;
+		this.visitor = visitor;
 	}
 	
 	protected void registerWithTypes(int... types)
 	{
-		getWriter().registerProcessor(this, types);
+		ProcessorsRegistry.registerProcessor(this, types);
 	}
 	
-	protected ObjCWriter getWriter() 
+	protected AS3CodeVisitor getVisitor() 
 	{
-		return writer;
-	}
-	
-	protected void log(String message)
-	{
-		getWriter().log(message);
+		return visitor;
 	}
 	
 	public abstract void process(TreeIterator iter, Tree current);
