@@ -3,8 +3,10 @@ package block;
 import java.util.ArrayList;
 import java.util.List;
 
+import block.processors.ConstructorLineProcessor;
 import block.processors.LineProcessor;
 import block.processors.StringLiteralProcessor;
+import block.processors.VarLineParser;
 
 public class BlockParser
 {
@@ -14,6 +16,8 @@ public class BlockParser
 	{
 		processors = new ArrayList<LineProcessor>();
 		processors.add(new StringLiteralProcessor());
+		processors.add(new VarLineParser());
+		processors.add(new ConstructorLineProcessor());
 	}
 	
 	public List<String> parse(String body)
