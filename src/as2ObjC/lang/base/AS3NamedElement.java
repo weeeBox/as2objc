@@ -1,4 +1,4 @@
-package as2ObjC.lang;
+package as2ObjC.lang.base;
 
 public abstract class AS3NamedElement
 {

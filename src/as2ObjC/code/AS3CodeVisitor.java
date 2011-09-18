@@ -1,5 +1,6 @@
 package as2ObjC.code;
 
+import as2ObjC.lang.AS3IdentifierElement;
 import as2ObjC.lang.AS3Visiblity;
 
 public interface AS3CodeVisitor
@@ -9,4 +10,5 @@ public interface AS3CodeVisitor
 	
 	void visitCurlyBraceOpen();
 	void visitCurlyBraceClosed();
+	void visitAS3ImportDeclaration(AS3IdentifierElement declaration);
 }

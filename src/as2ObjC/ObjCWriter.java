@@ -6,6 +6,7 @@ import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
 
 import as2ObjC.code.AbstractAS3CodeVisitor;
+import as2ObjC.lang.AS3ImportDeclaration;
 import as2ObjC.lang.AS3Visiblity;
 import as2ObjC.processors.ProcessorsRegistry;
 import as2ObjC.tree.TreeHelper;
@@ -60,17 +61,5 @@ public class ObjCWriter extends AbstractAS3CodeVisitor
 			System.out.print('\t');
 		}
 		System.out.println(message);
-	}
-
-	@Override
-	public void visitAS3VisiblityModifier(AS3Visiblity modifier)
-	{
-		
-	}
-
-	@Override
-	public void visitVisiblityModifier(AS3Visiblity visiblityModifier)
-	{
-		
 	}
 }
