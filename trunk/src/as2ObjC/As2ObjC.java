@@ -23,7 +23,7 @@ public class As2ObjC
 			ASCollector.parse(doc, collectors);
 			
 			String moduleName = extractFileNameNoExt(asSourceFile);
-			CodeWriter writer = new CodeWriter(moduleName, outputDir);
+			CodeWriter writer = new CodeWriter(doc, moduleName, outputDir);
 			writer.write(collectors);
 		}
 		catch (IOException e)
