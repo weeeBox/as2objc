@@ -2,13 +2,11 @@ package as2ObjC.processors;
 
 import org.antlr.runtime.tree.Tree;
 
-import flexprettyprint.handlers.AS3_exParser;
-
-import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
 import as2ObjC.code.AS3CodeVisitor;
 import as2ObjC.tree.TreeHelper;
 import as2ObjC.tree.TreeIterator;
+import flexprettyprint.handlers.AS3_exParser;
 
 public class BracesProcessor extends TreeElementProcessor
 {
@@ -21,11 +19,11 @@ public class BracesProcessor extends TreeElementProcessor
 	@Override
 	public void process(TreeIterator iter, Tree current)
 	{
-		if (TreeHelper.isLCurly(current))
+		if (TreeHelper.isCurlyOpen(current))
 		{
 			getVisitor().visitCurlyBraceOpen();
 		}
-		else if (TreeHelper.isRCurly(current))
+		else if (TreeHelper.isCurlyClosed(current))
 		{
 			getVisitor().visitCurlyBraceClosed();
 		}
