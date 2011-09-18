@@ -1,8 +1,8 @@
 package as2ObjC.code;
 
 import as2ObjC.TreeElementProcessor;
+import as2ObjC.lang.AS3ImportDeclaration;
 import as2ObjC.lang.AS3Visiblity;
-import as2ObjC.lang.base.AS3IdentifierElement;
 
 public abstract class AbstractAS3CodeVisitor implements AS3CodeVisitor
 {
@@ -55,7 +55,7 @@ public abstract class AbstractAS3CodeVisitor implements AS3CodeVisitor
 	}
 
 	@Override
-	public void visitAS3ImportDeclaration(AS3IdentifierElement declaration)
+	public void visitAS3ImportDeclaration(AS3ImportDeclaration declaration)
 	{
 		
 	}
