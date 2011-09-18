@@ -22,10 +22,8 @@ public class VarProcessor extends TreeElementProcessor
 	@Override
 	public void process(TreeIterator iter, Tree current)
 	{
-		AS3Identifier name = ProcessorHelper.extractIdentifier(iter);
-		ProcessorHelper.skipAndCheck(iter, AS3_exParser.COLON);
-		AS3Type type = ProcessorHelper.extractType(iter);
-		AS3Declaration declaration = new AS3Declaration(type, name);
+		AS3Declaration declaration = ProcessorHelper.extractVariableDeclaration(iter);
+		getVisitor().visitVarDeclaration(declaration);
 	}
 
 }

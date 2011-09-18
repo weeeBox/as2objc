@@ -182,9 +182,19 @@ public class TreeHelper
 		return isElementOfType(element, AS3_exParser.IDENTIFIER);
 	}
 
+	public static boolean isVoid(Tree element)
+	{
+		return isElementOfType(element, AS3_exParser.VOID);
+	}
+	
 	public static boolean isDot(Tree element) 
 	{
 		return isElementOfType(element, AS3_exParser.DOT);
+	}
+	
+	public static boolean isComma(Tree element) 
+	{
+		return isElementOfType(element, AS3_exParser.COMMA);
 	}
 
 	public static boolean isCurlyOpen(Tree element) 
@@ -197,9 +207,24 @@ public class TreeHelper
 		return isElementOfType(element, AS3_exParser.RCURLY);
 	}
 	
+	public static boolean isParenthesisOpen(Tree element) 
+	{
+		return isElementOfType(element, AS3_exParser.LPAREN);
+	}
+	
+	public static boolean isParenthesisClosed(Tree element) 
+	{
+		return isElementOfType(element, AS3_exParser.RPAREN);
+	}
+	
 	public static boolean isSemicolon(Tree element) 
 	{
 		return isElementOfType(element, AS3_exParser.SEMI);
+	}
+	
+	public static boolean isColon(Tree element) 
+	{
+		return isElementOfType(element, AS3_exParser.COLON);
 	}
 
 	public static boolean isExtends(Tree element) 

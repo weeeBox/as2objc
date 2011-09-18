@@ -1,6 +1,9 @@
 package as2ObjC.code;
 
 import as2ObjC.TreeElementProcessor;
+import as2ObjC.lang.AS3ConstructorDeclaration;
+import as2ObjC.lang.AS3Declaration;
+import as2ObjC.lang.AS3FunctionDeclaration;
 import as2ObjC.lang.AS3ImportDeclaration;
 import as2ObjC.lang.AS3Visiblity;
 
@@ -56,6 +59,24 @@ public abstract class AbstractAS3CodeVisitor implements AS3CodeVisitor
 
 	@Override
 	public void visitAS3ImportDeclaration(AS3ImportDeclaration declaration)
+	{
+		
+	}
+	
+	@Override
+	public void visitVarDeclaration(AS3Declaration declaration)
+	{
+		
+	}
+	
+	@Override
+	public void visitAS3ConstructorDeclaration(AS3ConstructorDeclaration declaration)
+	{
+		
+	}
+	
+	@Override
+	public void visitAS3FunctionDeclaration(AS3FunctionDeclaration declaration)
 	{
 		
 	}
