@@ -6,6 +6,9 @@ import java.util.List;
 
 import actionscriptinfocollector.ASCollector;
 import actionscriptinfocollector.ClassRecord;
+import actionscriptinfocollector.DeclRecord;
+import actionscriptinfocollector.FunctionRecord;
+import actionscriptinfocollector.PropertyLine;
 import actionscriptinfocollector.TextItem;
 
 public class CodeWriter
@@ -30,6 +33,8 @@ public class CodeWriter
 	{
 		try
 		{
+			CodeHelper.writeImport(implementationDest, moduleName);
+
 			for (ASCollector collector : collectors)
 			{
 				writeCollector(collector);
@@ -53,23 +58,61 @@ public class CodeWriter
 
 	private void write(ClassRecord classRecord)
 	{
+		writeClassHeader(classRecord);
+		writeClassImplementation(classRecord);
+	}
+
+	private void writeClassHeader(ClassRecord classRecord)
+	{
 		setWriteToHeader();
 
+		write("@interface " + CodeHelper.identifier(classRecord.getName()));
+
 		TextItem extendsItem = classRecord.getExtends();
-
-		write("@interface " + classRecord.getName().getText());
-		if (extendsItem != null)
-		{
-			write(" extends " + extendsItem.getText());
-		}
+		String extendsName = extendsItem == null ? "NSObject" : CodeHelper.identifier(extendsItem);
+		write(" : " + extendsName);
 		writeln();
-		
-		writeBlockOpen();
-		
-		writeln("test tab");
-		
-		writeBlockClose();
 
+		writeHeaderClassBody(classRecord);
+
+		writeln("@end");
+		writeln();
+	}
+
+	private void writeHeaderClassBody(ClassRecord classRecord)
+	{
+		List<PropertyLine> properties = classRecord.getProperties();
+
+		if (properties.size() > 0)
+		{
+			writeBlockOpen();
+			for (PropertyLine propertyLine : properties)
+			{
+				writeHeaderProperty(propertyLine);
+			}
+			writeBlockClose();
+		}
+	}
+
+	private void writeHeaderProperty(PropertyLine propertyLine)
+	{
+		List<DeclRecord> properties = propertyLine.getProperties();
+		for (DeclRecord declRecord : properties)
+		{
+			writeHeaderDeclRecord(declRecord);
+		}
+	}
+
+	private void writeHeaderDeclRecord(DeclRecord declRecord)
+	{
+		writeln(CodeHelper.type(declRecord.getType()) + " " + CodeHelper.identifier(declRecord.getName()) + ";");
+	}
+
+	private void writeClassImplementation(ClassRecord classRecord)
+	{
+		setWriteToImplementation();
+
+		writeln("@implementation " + CodeHelper.identifier(classRecord.getName()));
 		writeln("@end");
 		writeln();
 	}
@@ -83,7 +126,7 @@ public class CodeWriter
 	{
 		currentDestination.writeln(line);
 	}
-	
+
 	private void writeln()
 	{
 		currentDestination.writeln();
@@ -94,13 +137,13 @@ public class CodeWriter
 		writeln("{");
 		incTab();
 	}
-	
+
 	private void writeBlockClose()
 	{
 		decTab();
 		writeln("}");
 	}
-	
+
 	private void incTab()
 	{
 		currentDestination.incTab();
