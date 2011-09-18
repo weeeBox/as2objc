@@ -13,4 +13,10 @@ public class AS3Identifier
 	{
 		return name;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return getName();
+	}
 }
