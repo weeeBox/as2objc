@@ -2,6 +2,8 @@ package as2ObjC.processors;
 
 import org.antlr.runtime.tree.Tree;
 
+import flexprettyprint.handlers.AS3_exParser;
+
 import as2ObjC.ObjCWriter;
 import as2ObjC.TreeElementProcessor;
 import as2ObjC.tree.TreeHelper;
@@ -12,6 +14,7 @@ public class BracesProcessor extends TreeElementProcessor
 	public BracesProcessor(ObjCWriter writer)
 	{
 		super(writer);
+		registerWithTypes(AS3_exParser.LCURLY, AS3_exParser.RCURLY);
 	}
 
 	@Override

@@ -7,7 +7,16 @@ import as2ObjC.tree.TreeIterator;
 
 public class ProcessorHelper
 {
-	public static String identifier(TreeIterator iter)
+	///////////////////////////////////////////////////////////////////////
+	// Extractor
+	
+	public static String extractType(TreeIterator iter)
+	{
+		String name = extractIdentifier(iter.next());
+		return name;
+	}
+	
+	public static String extractIdentifier(TreeIterator iter)
 	{
 		StringBuilder result = new StringBuilder();
 		
@@ -16,7 +25,7 @@ public class ProcessorHelper
 			Tree element = iter.next();
 			if (TreeHelper.isIdentifier(element))
 			{
-				result.append(identifier(element));
+				result.append(extractIdentifier(element));
 			}
 			else if (TreeHelper.isDot(element))
 			{
@@ -32,10 +41,21 @@ public class ProcessorHelper
 		return result.toString();
 	}
 
-	private static String identifier(Tree element)
+	private static String extractIdentifier(Tree element)
 	{
 		if (!TreeHelper.isIdentifier(element))
 			throw new IllegalArgumentException("Cannot create identifier from: " + TreeHelper.getTypeName(element));
 		return element.getText();
+	}
+	
+	///////////////////////////////////////////////////////////////////////
+	// Helpers
+
+	/** Get next element from iterator and check it against some type. If expected element type doesn't match actual type - exception is thrown */
+	public static void skipAndCheck(TreeIterator iter, int type)
+	{
+		Tree element = iter.next();
+		if (element.getType() != type)
+			throw new IllegalArgumentException("Element skip check failed. Expected " + TreeHelper.getTypeName(type) + " but found " + TreeHelper.getTypeName(element.getType()));
 	}
 }
