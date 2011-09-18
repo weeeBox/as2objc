@@ -1,33 +1,70 @@
 package as2ObjC;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class WriteDestination 
 {
-	private File file;
-	private List<String> lines;
+	private PrintStream out;
+	private StringBuilder tabs;
+	private String tab;
+	private boolean needTab;
 
-	public WriteDestination(File file) 
+	public WriteDestination(File file) throws IOException
 	{
-		this.file = file;
-		lines = new ArrayList<String>();
+		this(new PrintStream(file));
 	}
 	
-	public void addLine(String line)
+	public WriteDestination(PrintStream out) 
 	{
-		lines.add(line);
+		this.out = out;
+		needTab = true;
+		tabs = new StringBuilder();
+		setTab("\t");
 	}
 	
-	public void flush() throws IOException
+	public void setTab(String tab)
 	{
-		PrintStream out = new PrintStream(file);
-		for (String line : lines) 
+		this.tab = tab;
+	}
+	
+	public void write(Object o)
+	{
+		if (needTab)
 		{
-			out.println(line);
+			needTab = false;
+			out.print(tabs);
 		}
+		out.print(o);
+	}
+	
+	public void writeln(Object o)
+	{
+		write(o + "\n");
+		needTab = true;
+	}
+	
+	public void writeln()
+	{
+		writeln("");
+	}
+	
+	public void incTab()
+	{
+		tabs.append(tab);
+	}
+	
+	public void decTab()
+	{
+		if (tabs.length() == 0)
+			throw new RuntimeException("Unable to dec tabs");
+		
+		tabs.setLength(tabs.length() - 1);
+	}
+	
+	public void close() throws IOException
+	{
 		out.close();
 	}
 }
