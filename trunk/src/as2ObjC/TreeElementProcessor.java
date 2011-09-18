@@ -13,9 +13,14 @@ public abstract class TreeElementProcessor
 		this.writer = writer;
 	}
 	
-	public ObjCWriter getWriter() 
+	protected ObjCWriter getWriter() 
 	{
 		return writer;
+	}
+	
+	protected void log(String message)
+	{
+		getWriter().log(message);
 	}
 	
 	public abstract void process(TreeIterator iter, Tree current);
