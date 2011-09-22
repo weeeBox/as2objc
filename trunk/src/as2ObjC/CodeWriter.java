@@ -130,7 +130,7 @@ public class CodeWriter
 		boolean isStatic = (modifierFlags & TopLevelItemRecord.ASDoc_Static) != 0;
 		write(isStatic ? "+" : "-");
 		write("(" + (isConstructor ? "id" : CodeHelper.type(returnType)) + ")");
-		write(CodeHelper.identifier(functionRecord.getName()));
+		write(isConstructor ? "init" : CodeHelper.identifier(functionRecord.getName()));
 		
 		List<DeclRecord> parameters = functionRecord.getParameters();
 		int paramIndex = 0;

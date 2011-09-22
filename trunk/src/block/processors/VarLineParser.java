@@ -5,6 +5,10 @@ import java.util.regex.Pattern;
 
 import as2ObjC.CodeHelper;
 
+import static block.RegexHelp.SPACE;
+import static block.RegexHelp.IDENTIFIER;
+import static block.RegexHelp.MBSPACE;;
+
 public class VarLineParser extends LineProcessor
 {
 	private Pattern pattern = Pattern.compile("var" + SPACE + IDENTIFIER + MBSPACE + ":" + MBSPACE + IDENTIFIER);

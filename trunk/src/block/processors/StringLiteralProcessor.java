@@ -1,5 +1,7 @@
 package block.processors;
 
+import static block.RegexHelp.QUOTE;
+
 public class StringLiteralProcessor extends LineProcessor
 {
 	@Override
