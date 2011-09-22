@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static block.RegexHelp.SPACE;
+import static block.RegexHelp.IDENTIFIER;;
+
 public class ConstructorLineProcessor extends LineProcessor
 {
 	private static Pattern pattern = Pattern.compile("new" + SPACE + IDENTIFIER);
