@@ -11,6 +11,7 @@ import block.processors.ReplaceTokensProcessor;
 import block.processors.StaticFieldProcessor;
 import block.processors.StringLiteralProcessor;
 import block.processors.VarLineParser;
+import block.processors.VarProcessor;
 
 public class BlockParser
 {
@@ -26,6 +27,7 @@ public class BlockParser
 		processors.add(new FunctionCallProcessor());
 		processors.add(new StaticFieldProcessor());
 		processors.add(new DoubleToFloat());
+		processors.add(new VarProcessor());
 	}
 	
 	public List<String> parse(String body)

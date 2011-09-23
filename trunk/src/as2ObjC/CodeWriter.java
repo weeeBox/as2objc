@@ -167,7 +167,17 @@ public class CodeWriter
 			
 			if (isConstructor)
 			{
-				writeln(impl, "self = [super init];");
+				String superInit = findSuperInit(bodyLines);
+				if (superInit != null)
+				{
+					bodyLines.remove(superInit);
+				}
+				else
+				{
+					superInit = "[super init];";
+				}
+				
+				writeln(impl, "self = " + superInit);
 				writeln(impl, "if (self)");
 				writeBlockOpen(impl);
 				writeCodeLines(impl, bodyLines);
@@ -187,6 +197,20 @@ public class CodeWriter
 		}
 	}
 	
+	private String findSuperInit(List<String> bodyLines)
+	{
+		for (String line : bodyLines)
+		{
+			if (line.contains("[super init]"))
+				return line;
+			
+			if (line.contains("[super init:"))
+				return line;
+		}
+		
+		return null;
+	}
+
 	private void writeCodeLines(WriteDestination dest, List<String> lines)
 	{
 		for (String line : lines)
