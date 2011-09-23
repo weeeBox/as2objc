@@ -22,6 +22,8 @@ public class CodeHelper
 		basicTypesLookup.put("float", "float");
 		basicTypesLookup.put("double", "double");
 		basicTypesLookup.put("Boolean", "BOOL");
+		basicTypesLookup.put("Number", "float");
+		basicTypesLookup.put("uint", "int");
 		
 		flowOperators = new ArrayList<String>();
 		flowOperators.add("if");
