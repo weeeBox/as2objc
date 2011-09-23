@@ -46,7 +46,6 @@ public class DotLineProcessor extends LineProcessor
 			boolean hasCallTarget = matcher.group(GR_DOT) != null;
 			
 			String argsStr = LineProcHelp.parenthesisVal(line, matcher.end() - 1);
-			System.out.println(matcher.group(1) + argsStr + ")");
 			
 			StringBuilder argsBuf = new StringBuilder();
 			if (argsStr.length() > 0)
