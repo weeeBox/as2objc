@@ -10,8 +10,7 @@ import block.processors.LineProcessor;
 import block.processors.ReplaceTokensProcessor;
 import block.processors.StaticFieldProcessor;
 import block.processors.StringLiteralProcessor;
-import block.processors.VarLineParser;
-import block.processors.VarProcessor;
+import block.processors.VarLineProcessor;
 
 public class BlockParser
 {
@@ -21,13 +20,12 @@ public class BlockParser
 	{
 		processors = new ArrayList<LineProcessor>();
 		processors.add(new StringLiteralProcessor());
-		processors.add(new VarLineParser());
 		processors.add(new ArrayLiteralProcessor());
 		processors.add(new ReplaceTokensProcessor());
+		processors.add(new VarLineProcessor());
 		processors.add(new FunctionCallProcessor());
 		processors.add(new StaticFieldProcessor());
 		processors.add(new DoubleToFloat());
-		processors.add(new VarProcessor());
 	}
 	
 	public List<String> parse(String body)
