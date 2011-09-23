@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import block.processors.ArrayLiteralProcessor;
-import block.processors.DotLineProcessor;
+import block.processors.FunctionCallProcessor;
 import block.processors.LineProcessor;
 import block.processors.StaticFieldProcessor;
 import block.processors.StringLiteralProcessor;
@@ -20,7 +20,7 @@ public class BlockParser
 		processors.add(new StringLiteralProcessor());
 		processors.add(new VarLineParser());
 		processors.add(new ArrayLiteralProcessor());
-		processors.add(new DotLineProcessor());
+		processors.add(new FunctionCallProcessor());
 		processors.add(new StaticFieldProcessor());
 	}
 	
