@@ -20,7 +20,6 @@ public class StaticFieldProcessor extends LineProcessor
 		{
 			String type = matcher.group(1);
 			String field = matcher.group(2);
-			System.out.println(type + " " + field);
 			line = matcher.replaceFirst("[" + type + " " + field + "]");
 		}
 		return line;
