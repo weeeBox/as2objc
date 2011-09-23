@@ -34,7 +34,7 @@ public class FunctionCallProcessor extends LineProcessor
 		while (matcher.find())
 		{
 			String identifier = matcher.group(GR_IDENTIFIER);
-			if (CodeHelper.isFlowOperator(identifier))
+			if (isIdentifierIgnored(identifier))
 			{
 				continue;
 			}
@@ -115,4 +115,8 @@ public class FunctionCallProcessor extends LineProcessor
 		return 0;
 	}
 
+	private boolean isIdentifierIgnored(String identifier)
+	{
+		return CodeHelper.isFlowOperator(identifier) || CodeHelper.isSystemReserved(identifier);
+	}
 }
