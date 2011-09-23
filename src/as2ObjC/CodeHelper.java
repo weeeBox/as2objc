@@ -1,6 +1,8 @@
 package as2ObjC;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import actionscriptinfocollector.DeclRecord;
@@ -9,6 +11,7 @@ import actionscriptinfocollector.TextItem;
 public class CodeHelper
 {
 	private static Map<String, String> basicTypesLookup;
+	private static List<String> flowOperators;
 	
 	static
 	{
@@ -18,11 +21,24 @@ public class CodeHelper
 		basicTypesLookup.put("float", "float");
 		basicTypesLookup.put("double", "double");
 		basicTypesLookup.put("Boolean", "BOOL");
+		
+		flowOperators = new ArrayList<String>();
+		flowOperators.add("if");
+		flowOperators.add("while");
+		flowOperators.add("for");
+		flowOperators.add("switch");
+		flowOperators.add("do");
+		flowOperators.add("each");
 	}
 	
 	private static String findBasic(String type)
 	{
 		return basicTypesLookup.get(type);
+	}
+	
+	public static boolean isFlowOperator(String identifier)
+	{
+		return flowOperators.contains(identifier);
 	}
 	
 	public static String literal(String str)
