@@ -12,6 +12,7 @@ public class CodeHelper
 {
 	private static Map<String, String> basicTypesLookup;
 	private static List<String> flowOperators;
+	private static List<String> systemReserved;
 	
 	static
 	{
@@ -29,6 +30,10 @@ public class CodeHelper
 		flowOperators.add("switch");
 		flowOperators.add("do");
 		flowOperators.add("each");
+		
+		systemReserved = new ArrayList<String>();
+		systemReserved.add("NSLog");
+		systemReserved.add("NSAssert");
 	}
 	
 	private static String findBasic(String type)
@@ -39,6 +44,11 @@ public class CodeHelper
 	public static boolean isFlowOperator(String identifier)
 	{
 		return flowOperators.contains(identifier);
+	}
+	
+	public static boolean isSystemReserved(String identifier)
+	{
+		return systemReserved.contains(identifier);
 	}
 	
 	public static String literal(String str)
