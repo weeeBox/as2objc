@@ -78,7 +78,10 @@ public class FunctionCallProcessor extends LineProcessor
 			}
 			else
 			{
-				newCode = createCall("self", identifier, argsBuf.toString());
+				if (identifier.equals("super"))
+					newCode = createCall("super", "init", argsBuf.toString());
+				else
+					newCode = createCall("self", identifier, argsBuf.toString());
 				oldCode = line.substring(matcher.start(), matcher.end() + argsStr.length() + 1);
 			}
 			line = line.replace(oldCode, newCode);
