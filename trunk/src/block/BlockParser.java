@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import block.processors.ArrayLiteralProcessor;
+import block.processors.DoubleToFloat;
 import block.processors.FunctionCallProcessor;
 import block.processors.LineProcessor;
 import block.processors.ReplaceTokensProcessor;
@@ -24,6 +25,7 @@ public class BlockParser
 		processors.add(new ReplaceTokensProcessor());
 		processors.add(new FunctionCallProcessor());
 		processors.add(new StaticFieldProcessor());
+		processors.add(new DoubleToFloat());
 	}
 	
 	public List<String> parse(String body)
