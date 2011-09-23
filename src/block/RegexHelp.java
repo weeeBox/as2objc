@@ -5,6 +5,7 @@ public class RegexHelp
 	public static final String QUOTE = "\"";
 	public static final String SPACE = "\\s+";
 	public static final String MBSPACE = "\\s?";
+	public static final String TIDENTIFIER = group("[\\p{Upper}\\d_$][\\w\\d_$]+");
 	public static final String IDENTIFIER = group("[\\w\\d_$]+");
 	public static final String ANY = group(".*");
 	public static final String LPAR = "\\(";

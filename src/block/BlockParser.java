@@ -6,6 +6,7 @@ import java.util.List;
 import block.processors.ArrayLiteralProcessor;
 import block.processors.DotLineProcessor;
 import block.processors.LineProcessor;
+import block.processors.StaticFieldProcessor;
 import block.processors.StringLiteralProcessor;
 import block.processors.VarLineParser;
 
@@ -20,6 +21,7 @@ public class BlockParser
 		processors.add(new VarLineParser());
 		processors.add(new ArrayLiteralProcessor());
 		processors.add(new DotLineProcessor());
+		processors.add(new StaticFieldProcessor());
 	}
 	
 	public List<String> parse(String body)
