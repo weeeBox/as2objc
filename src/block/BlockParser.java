@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import block.processors.ArrayLiteralProcessor;
+import block.processors.ArrayProcessor;
 import block.processors.DoubleToFloat;
 import block.processors.FunctionCallProcessor;
 import block.processors.LineProcessor;
@@ -21,6 +22,7 @@ public class BlockParser
 		processors = new ArrayList<LineProcessor>();
 		processors.add(new StringLiteralProcessor());
 		processors.add(new ArrayLiteralProcessor());
+		processors.add(new ArrayProcessor());
 		processors.add(new ReplaceTokensProcessor());
 		processors.add(new VarLineProcessor());
 		processors.add(new FunctionCallProcessor());

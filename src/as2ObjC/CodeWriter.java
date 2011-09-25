@@ -69,6 +69,9 @@ public class CodeWriter
 		write(hdr, " : " + extendsName);
 		writeln(hdr);
 
+		writeStatics(classRecord);
+		
+		writeln(impl);
 		writeln(impl, "@implementation " + CodeHelper.identifier(classRecord.getName()));
 
 		writeClassBody(classRecord);
@@ -80,47 +83,130 @@ public class CodeWriter
 		writeln(impl);
 	}
 
-	private void writeClassBody(ClassRecord classRecord)
+	private void writeStatics(ClassRecord classRecord) 
 	{
-		writeProperties(classRecord);
-		writeFunctions(classRecord);
+		List<PropertyLine> propsLines = classRecord.getProperties();
+		if (propsLines.size() > 0)
+		{
+			impl.writeln();
+			for (PropertyLine propertyLine : propsLines) 
+			{
+				if (!propertyLine.isStatic())
+				{
+					continue;
+				}
+				
+				boolean isConst = propertyLine.isConst();
+				
+				List<DeclRecord> props = propertyLine.getProperties();
+				for (DeclRecord declRecord : props) 
+				{
+					impl.write("static ");
+					if (isConst)
+					{
+						impl.write("const ");
+					}
+					
+					CodeHelper.writeDeclaration(impl, declRecord);
+					if (declRecord.hasInitializer())
+					{
+						impl.write(" = " + declRecord.getInitializer());
+					}
+					impl.writeln(";");
+				}
+			}
+		}
 	}
 
-	private void writeProperties(ClassRecord classRecord)
+	private void writeClassBody(ClassRecord classRecord)
 	{
-		List<PropertyLine> properties = classRecord.getProperties();
+		writeFields(classRecord);
+		writeProperties(classRecord);
+		writeFunctions(classRecord);
+		writeStaticProps(classRecord);
+	}
 
-		if (properties.size() > 0)
+	private void writeFields(ClassRecord classRecord)
+	{
+		List<PropertyLine> propLines = classRecord.getProperties();
+
+		String lastVisiblity = null;
+		if (propLines.size() > 0)
 		{
 			writeBlockOpen(hdr);
-			for (PropertyLine propertyLine : properties)
+			for (PropertyLine propertyLine : propLines)
 			{
-				writeProperty(hdr, propertyLine);
+				String visiblity = propertyLine.getVisiblity();
+				boolean isStatic = propertyLine.isStatic();
+				if (isStatic)
+				{
+					continue;
+				}
+				
+				List<DeclRecord> props = propertyLine.getProperties();
+				
+				for (DeclRecord declRecord : props)
+				{
+					if (!visiblity.equals(lastVisiblity))
+					{
+						hdr.writeln("@" + visiblity);
+						lastVisiblity = visiblity;
+					}
+					hdr.incTab();
+					CodeHelper.writeDeclaration(hdr, declRecord);
+					hdr.writeln(";");
+					hdr.decTab();
+				}
 			}
 			writeBlockClose(hdr);
 		}
 	}
-
-	private void writeProperty(WriteDestination dest, PropertyLine propertyLine)
+	
+	private void writeProperties(ClassRecord classRecord)
 	{
-		List<DeclRecord> properties = propertyLine.getProperties();
-		for (DeclRecord declRecord : properties)
+		List<PropertyLine> propertiesLines = classRecord.getProperties();
+		
+		if (propertiesLines.size() > 0)
 		{
-			CodeHelper.writeDeclaration(dest, declRecord);
-			dest.writeln(";");
+			hdr.writeln();
+			impl.writeln();
+			for (PropertyLine propertyLine : propertiesLines)
+			{
+				if (propertyLine.isStatic())
+				{
+					continue;
+				}
+				
+				List<DeclRecord> props = propertyLine.getProperties();
+				for (DeclRecord declRecord : props)
+				{
+					hdr.write("@property (nonatomic, assign) ");
+					CodeHelper.writeDeclaration(hdr, declRecord);
+					hdr.writeln(";");
+					
+					impl.writeln("@synthesize " + CodeHelper.identifier(declRecord.getName()) + ";");
+				}
+			}
+			hdr.writeln();
+			impl.writeln();
 		}
 	}
 
 	private void writeFunctions(ClassRecord classRecord)
 	{
 		List<FunctionRecord> functions = classRecord.getFunctions();
+		int functionIndex = 0;
 		for (FunctionRecord functionRecord : functions)
 		{
-			writeFunction(functionRecord);
+			writeFunction(classRecord, functionRecord);
+			if (++functionIndex < functions.size())
+			{
+				writeln(impl);
+			}
 		}
 	}
 
-	private void writeFunction(FunctionRecord functionRecord)
+	private void writeFunction(ClassRecord classRecord, FunctionRecord functionRecord)
 	{
 		int modifierFlags = functionRecord.getModifierFlags();
 
@@ -148,11 +234,11 @@ public class CodeWriter
 		writeln(impl);
 		
 		writeBlockOpen(impl);
-		writeFunctionBody(functionRecord, isConstructor);
+		writeFunctionBody(classRecord, functionRecord, isConstructor);
 		writeBlockClose(impl);
 	}
 
-	private void writeFunctionBody(FunctionRecord functionRecord, boolean isConstructor)
+	private void writeFunctionBody(ClassRecord classRecord, FunctionRecord functionRecord, boolean isConstructor)
 	{
 		int startPos = functionRecord.getStartPos();
 		int endPos = functionRecord.getEndPos();
@@ -180,6 +266,7 @@ public class CodeWriter
 				writeln(impl, "self = " + superInit);
 				writeln(impl, "if (self)");
 				writeBlockOpen(impl);
+				writeInitializers(impl, classRecord);
 				writeCodeLines(impl, bodyLines);
 				writeBlockClose(impl);
 				writeln(impl, "return self;");
@@ -194,6 +281,62 @@ public class CodeWriter
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	private void writeInitializers(WriteDestination dest, ClassRecord classRecord) 
+	{
+		List<PropertyLine> propsLines = classRecord.getProperties();
+		boolean hasIntializer = false;
+		for (PropertyLine propertyLine : propsLines) 
+		{
+			if (propertyLine.isStatic())
+			{
+				continue;
+			}
+			
+			List<DeclRecord> props = propertyLine.getProperties();
+			for (DeclRecord declRecord : props) 
+			{
+				if (declRecord.hasInitializer())
+				{
+					hasIntializer = true;
+					dest.writeln(CodeHelper.identifier(declRecord.getName()) + " = " + declRecord.getInitializer() + ";");
+				}
+			}
+		}
+		if (hasIntializer)
+		{
+			dest.writeln();
+		}
+	}
+
+	private void writeStaticProps(ClassRecord classRecord) 
+	{
+		List<PropertyLine> propLines = classRecord.getProperties();
+		if (propLines.size() > 0)
+		{
+			impl.writeln();
+			hdr.writeln();
+			for (PropertyLine propLine : propLines) 
+			{
+				if (!propLine.isStatic())
+				{
+					continue;
+				}
+				
+				List<DeclRecord> props = propLine.getProperties();
+				for (DeclRecord prop : props) 
+				{
+					String type = CodeHelper.type(prop.getType());
+					String name = CodeHelper.identifier(prop.getName());
+					impl.writeln("+ (" + type + ")" + name);
+					hdr.writeln("+ (" + type + ")" + name + ";");
+					writeBlockOpen(impl);
+					impl.writeln("return " + name + ";");
+					writeBlockClose(impl);
+				}
+			}
 		}
 	}
 	

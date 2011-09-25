@@ -93,4 +93,20 @@ public class PropertyLine extends TopLevelItemRecord implements DeclHolder {
 	{
 		return mIsConst;
 	}
+	
+	public boolean isStatic()
+	{
+		int flags = getModifierFlags();
+		return (flags & ASDoc_Static) != 0;
+	}
+	
+	public String getVisiblity()
+	{
+		int flags = getModifierFlags();
+		if ((flags & ASDoc_Private) != 0)
+			return "private";
+		if ((flags & ASDoc_Protected) != 0)
+			return "protected";
+		return "public";
+	}
 }
