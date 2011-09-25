@@ -9,6 +9,8 @@ import actionscriptinfocollector.text.IDocument;
 public class DeclRecord extends SourceItem {
 	private TextItem mName;
 	private TextItem mType;
+	private String initializer;
+	
 	public DeclRecord(Token name, ParserRuleReturnScope type)
 	{
 		captureStartPos(name);
@@ -81,5 +83,15 @@ public class DeclRecord extends SourceItem {
 		return super.validateText(doc);
 	}
 	
+	public boolean hasInitializer() {
+		return initializer != null;
+	}
 	
+	public String getInitializer() {
+		return initializer;
+	}
+	
+	public void setInitializer(String initializer) {
+		this.initializer = initializer;
+	}
 }

@@ -28,40 +28,139 @@ public class BlockIterator
 	{
 		List<String> lines = new ArrayList<String>();
 		
-		StringBuilder lineBuffer = new StringBuilder();
-		for (int charIndex = 0; charIndex < code.length(); charIndex++)
+		StringBuilder result = new StringBuilder();
+		
+		int counter = 0;
+		boolean inStringLiteral = false;
+		boolean inParentnessis = false;
+		boolean inComment = false;
+		
+		char prevChar = 0;
+		for (int i = 0; i < code.length(); i++)
 		{
-			char chr = code.charAt(charIndex);
-			if (chr == '\n' || chr == '\r' || chr == '\t')
+			char chr = code.charAt(i);
+			if (chr == '"' && prevChar != '\\')
+			{
+				inStringLiteral = !inStringLiteral;
+			}
+			if (chr == '*' && prevChar == '/')
+			{
+				inComment = true;
+			}
+			else if (chr == '/' && prevChar == '*')
+			{
+				inComment = false;
+			}
+			if (chr == '(' && !inStringLiteral)
+			{
+				inParentnessis = true;
+				counter++;
+			}
+			else if (chr == ')' && !inStringLiteral)
+			{
+				counter--;
+				inParentnessis = counter > 0;
+			}
+			
+			if ((chr == '\t' || chr == '\r') && !inComment)
 			{
 				continue;
 			}
-
-			if (chr == ';')
+			
+			if (chr == '\n' && !inComment)
 			{
-				lineBuffer.append(chr);
+				String currentLine = result.toString().trim();
+				if (currentLine.length() == 0)
+				{
+					result.setLength(0);
+					continue;
+				}
+				else if (currentLine.startsWith("//"))
+				{
+					lines.add(currentLine);
+					result.setLength(0);
+					continue;
+				}
 			}
 			
-			if (chr == ';' || chr == '{' || chr == '}')
+			if ((chr == ';' || chr == '{' || chr == '}') && !(inStringLiteral || inParentnessis))
 			{
-				String line = lineBuffer.toString().trim();
-				lineBuffer.setLength(0);
-				if (line.length() > 0)
+				if (chr == ';')
 				{
+					result.append(chr);
+				}
+				
+				String line = result.toString().trim();
+				
+				if (isSingleLineOperator(line))
+				{
+					if (line.contains("\n"))
+					{
+						String[] split = line.split("\n");
+						int lineIndex = 0;
+						for (String s : split) 
+						{
+							lines.add(++lineIndex > 1 ? ("\t" + s) : s);
+						}
+					}
+					else
+					{
+						lines.add(line);
+					}
+				}
+				else if (isCaseSwitch(line) || isDefaultSwitch(line))
+				{
+					if (line.contains("\n"))
+					{
+						String[] split = line.split("\n");
+						for (String s : split) 
+						{
+							lines.add(s);
+						}
+					}
+					else
+					{
+						lines.add(line);
+					}
+				}
+				else if (line.length() > 0)
+				{				
 					lines.add(line);
 				}
 				if (chr != ';')
 				{
 					lines.add("" + chr);
 				}
+				result.setLength(0);
 			}
 			else
 			{
-				lineBuffer.append(chr);
+				result.append(chr);
 			}
-			
-		}		
+			prevChar = chr;
+		}
 		
 		return lines;
+	}
+
+	private boolean isSingleLineOperator(String line) 
+	{
+		if (line.endsWith("{"))
+			return false;
+		
+		return 	line.startsWith("if(") || line.startsWith("if ") ||
+				line.startsWith("for(") || line.startsWith("for ") ||
+				line.startsWith("while(") || line.startsWith("while ") ||
+				line.equals("do");
+	}
+	
+	private boolean isCaseSwitch(String line) 
+	{
+		return 	line.startsWith("case ");
+	}
+	
+	private boolean isDefaultSwitch(String line) 
+	{
+		return 	line.startsWith("default:");
 	}
 }
