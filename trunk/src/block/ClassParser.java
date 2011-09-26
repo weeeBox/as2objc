@@ -47,7 +47,7 @@ public class ClassParser
 			{
 				for (LineProcessor processor : processors) 
 				{
-					processor.process(line);
+					line = processor.process(line);
 				}
 			}
 		}

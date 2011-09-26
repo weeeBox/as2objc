@@ -24,6 +24,7 @@ public class CodeHelper
 		basicTypesLookup.put("Boolean", "BOOL");
 		basicTypesLookup.put("Number", "float");
 		basicTypesLookup.put("uint", "int");
+		basicTypesLookup.put("String", "NSString");
 		
 		flowOperators = new ArrayList<String>();
 		flowOperators.add("if");

@@ -8,6 +8,7 @@ import actionscriptinfocollector.ASCollector;
 import actionscriptinfocollector.ClassRecord;
 import actionscriptinfocollector.DeclRecord;
 import actionscriptinfocollector.FunctionRecord;
+import actionscriptinfocollector.ImportRecord;
 import actionscriptinfocollector.PropertyLine;
 import actionscriptinfocollector.TextItem;
 import actionscriptinfocollector.TopLevelItemRecord;
@@ -41,6 +42,11 @@ public class CodeWriter
 
 			for (ASCollector collector : collectors)
 			{
+				writeImport(collector);
+			}
+			
+			for (ASCollector collector : collectors)
+			{
 				writeCollector(collector);
 			}
 		}
@@ -48,6 +54,22 @@ public class CodeWriter
 		{
 			hdr.close();
 			impl.close();
+		}
+	}
+
+	private void writeImport(ASCollector collector) 
+	{
+		List<ImportRecord> imports = collector.getImports();
+		if (imports.size() > 0)
+		{
+			for (ImportRecord importRecord : imports) 
+			{
+				String fullName = importRecord.getType().getText();
+				int lastDot = fullName.lastIndexOf('.');
+				String shortName = lastDot == -1 ? fullName : fullName.substring(lastDot + 1, fullName.length());
+				CodeHelper.writeImport(hdr, shortName);
+			}
+			hdr.writeln();
 		}
 	}
 
@@ -236,6 +258,15 @@ public class CodeWriter
 		writeBlockOpen(impl);
 		writeFunctionBody(classRecord, functionRecord, isConstructor);
 		writeBlockClose(impl);
+		
+		if (isConstructor)
+		{
+			impl.writeln();
+			impl.writeln("-(void)dealloc");
+			writeBlockOpen(impl);
+			impl.writeln("[super dealloc];");
+			writeBlockClose(impl);
+		}
 	}
 
 	private void writeFunctionBody(ClassRecord classRecord, FunctionRecord functionRecord, boolean isConstructor)

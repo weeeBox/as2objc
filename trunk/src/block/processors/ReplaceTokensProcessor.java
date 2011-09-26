@@ -19,6 +19,7 @@ public class ReplaceTokensProcessor extends LineProcessor
 		lookup.put(boundary("true"), "YES");
 		lookup.put(boundary("false"), "NO");
 		lookup.put(boundary("this"), "self");
+		lookup.put(boundary("null"), "nil");
 		
 		lookup.put(boundary("trace"), "NSLog");
 	}
