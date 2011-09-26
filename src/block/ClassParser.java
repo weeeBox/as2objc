@@ -7,7 +7,6 @@ import actionscriptinfocollector.ASCollector;
 import actionscriptinfocollector.ClassRecord;
 import actionscriptinfocollector.DeclRecord;
 import actionscriptinfocollector.PropertyLine;
-import as2ObjC.CodeHelper;
 import block.processors.ArrayLiteralProcessor;
 import block.processors.ArrayProcessor;
 import block.processors.DoubleToFloat;
@@ -35,17 +34,20 @@ public class ClassParser
 		processors.add(varProcessor = new FieldVarProcessor());
 	}
 	
-	public void parse(List<String> lines)
+	public void parse(String code)
 	{
+		BlockIterator iterator = new BlockIterator(code);
+		
 		int counter = 0;
-		for (String line : lines) 
+		while (iterator.hasNext()) 
 		{
+			String line = iterator.next();
 			counter += countParentnessis(line);
 			if (counter == 2)
 			{
 				for (LineProcessor processor : processors) 
 				{
-					line = processor.process(line);
+					processor.process(line);
 				}
 			}
 		}
