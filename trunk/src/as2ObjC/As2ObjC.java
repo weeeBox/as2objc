@@ -70,9 +70,9 @@ public class As2ObjC
 		IDocument doc = TextDocument.read(source);
 		ASCollector.parse(doc, collectors);
 		
-		List<String> lines = readLines(source);
+		String code = readCode(source);
 		ClassParser classParser = new ClassParser(collectors);
-		classParser.parse(lines);
+		classParser.parse(code);
 		
 		String moduleName = extractFileNameNoExt(source);
 		CodeWriter writer = new CodeWriter(doc, moduleName, outputDir);
@@ -86,21 +86,22 @@ public class As2ObjC
 		return dotIndex == -1 ? filename : filename.substring(0, dotIndex);
 	}
 	
-	private static List<String> readLines(File file) throws IOException
+	private static String readCode(File file) throws IOException
 	{
 		BufferedReader reader = null;
 		try
 		{
 			reader = new BufferedReader(new FileReader(file));
-			List<String> lines = new ArrayList<String>();
+			StringBuilder code = new StringBuilder();
 			
 			String line;
 			while ((line = reader.readLine()) != null)
 			{
-				lines.add(line);
+				code.append(line);
+				code.append("\n");
 			}
 			
-			return lines;
+			return code.toString();
 		}
 		finally
 		{
