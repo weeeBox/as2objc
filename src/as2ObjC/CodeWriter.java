@@ -246,34 +246,37 @@ public class CodeWriter
 		try
 		{
 			String functionText = doc.get(startPos, endPos - startPos);
-			int blockStart = functionText.indexOf('{') + 1;
-			int blockEnd = functionText.lastIndexOf('}');
-			BlockParser parser = new BlockParser();
-			List<String> bodyLines = parser.parse(functionText.substring(blockStart, blockEnd));
-			
-			if (isConstructor)
+			if (functionText.indexOf('{') != -1 && functionText.indexOf('}') != -1)
 			{
-				String superInit = findSuperInit(bodyLines);
-				if (superInit != null)
+				int blockStart = functionText.indexOf('{') + 1;
+				int blockEnd = functionText.lastIndexOf('}');
+				BlockParser parser = new BlockParser();
+				List<String> bodyLines = parser.parse(functionText.substring(blockStart, blockEnd));
+				
+				if (isConstructor)
 				{
-					bodyLines.remove(superInit);
+					String superInit = findSuperInit(bodyLines);
+					if (superInit != null)
+					{
+						bodyLines.remove(superInit);
+					}
+					else
+					{
+						superInit = "[super init];";
+					}
+					
+					writeln(impl, "self = " + superInit);
+					writeln(impl, "if (self)");
+					writeBlockOpen(impl);
+					writeInitializers(impl, classRecord);
+					writeCodeLines(impl, bodyLines);
+					writeBlockClose(impl);
+					writeln(impl, "return self;");
 				}
 				else
 				{
-					superInit = "[super init];";
+					writeCodeLines(impl, bodyLines);
 				}
-				
-				writeln(impl, "self = " + superInit);
-				writeln(impl, "if (self)");
-				writeBlockOpen(impl);
-				writeInitializers(impl, classRecord);
-				writeCodeLines(impl, bodyLines);
-				writeBlockClose(impl);
-				writeln(impl, "return self;");
-			}
-			else
-			{
-				writeCodeLines(impl, bodyLines);
 			}
 			
 		}
