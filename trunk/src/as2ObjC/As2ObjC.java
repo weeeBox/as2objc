@@ -2,6 +2,7 @@ package as2ObjC;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,28 +18,66 @@ public class As2ObjC
 {
 	public static void main(String[] args) 
 	{
-		File asSourceFile = new File(args[0]);
-		File outputDir = new File(args[1]);
+		File outputDir = new File(args[0]);		
 		
 		try
 		{
-			List<ASCollector> collectors = new ArrayList<ASCollector>();
-			IDocument doc = TextDocument.read(asSourceFile);
-			ASCollector.parse(doc, collectors);
-			
-			List<String> lines = readLines(asSourceFile);
-			ClassParser classParser = new ClassParser(collectors);
-			classParser.parse(lines);
-			
-			String moduleName = extractFileNameNoExt(asSourceFile);
-			CodeWriter writer = new CodeWriter(doc, moduleName, outputDir);
-			writer.write(collectors);
+			for (int i = 0; i < args.length; ++i)
+			{
+				File asSourceFile = new File(args[i]);
+				process(asSourceFile, outputDir);
+			}
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
     }
+
+	private static void process(File file, File outputDir) throws IOException
+	{
+		if (file.isDirectory())
+		{
+			File[] files = file.listFiles(new FileFilter() 
+			{
+				@Override
+				public boolean accept(File pathname) 
+				{
+					String filename = pathname.getName();
+					if (pathname.isDirectory())
+						return !filename.equals(".svn");
+					
+					return filename.endsWith(".as");
+				}
+			});
+			
+			for (File child : files) 
+			{
+				process(child, outputDir);
+			}
+		}
+		else
+		{
+			convert(file, outputDir);
+		}
+	}
+	
+	private static void convert(File source, File outputDir) throws IOException 
+	{
+		System.out.println("Converting: " + source);
+		
+		List<ASCollector> collectors = new ArrayList<ASCollector>();
+		IDocument doc = TextDocument.read(source);
+		ASCollector.parse(doc, collectors);
+		
+		List<String> lines = readLines(source);
+		ClassParser classParser = new ClassParser(collectors);
+		classParser.parse(lines);
+		
+		String moduleName = extractFileNameNoExt(source);
+		CodeWriter writer = new CodeWriter(doc, moduleName, outputDir);
+		writer.write(collectors);
+	}
 
 	private static String extractFileNameNoExt(File file)
 	{

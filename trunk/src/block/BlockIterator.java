@@ -81,6 +81,10 @@ public class BlockIterator
 					result.setLength(0);
 					continue;
 				}
+				else if (currentLine.endsWith(",") || currentLine.endsWith(":"))
+				{
+					continue;
+				}
 			}
 			
 			if ((chr == ';' || chr == '{' || chr == '}') && !(inStringLiteral || inParentnessis))
