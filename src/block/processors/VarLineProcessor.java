@@ -11,7 +11,7 @@ import as2ObjC.CodeHelper;
 
 public class VarLineProcessor extends LineProcessor
 {
-	private Pattern pattern = Pattern.compile("var" + SPACE + IDENTIFIER + MBSPACE + ":" + MBSPACE + IDENTIFIER);
+	private Pattern pattern = Pattern.compile("(var|const)" + SPACE + IDENTIFIER + MBSPACE + ":" + MBSPACE + IDENTIFIER);
 	
 	@Override
 	public String process(String line)
@@ -19,7 +19,13 @@ public class VarLineProcessor extends LineProcessor
 		Matcher m;
 		if ((m = pattern.matcher(line)).find())
 		{
-			line = m.replaceFirst(CodeHelper.type(m.group(2)) + " " + m.group(1));
+			String type = m.group(3);
+			String name = m.group(2);
+			
+			assert type != null : line;
+			assert name != null : line;
+			
+			line = m.replaceFirst(CodeHelper.type(type) + " " + name);
 		}
 		
 		return line;
