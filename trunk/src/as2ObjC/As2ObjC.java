@@ -71,6 +71,10 @@ public class As2ObjC
 		ASCollector.parse(doc, collectors);
 		
 		String code = readCode(source);
+//		String packageName = extractPackageName(code);
+//		File dir = new File(outputDir, packageName.replace('.', '/'));
+//		dir.mkdirs();
+		
 		ClassParser classParser = new ClassParser(collectors);
 		classParser.parse(code);
 		
@@ -84,6 +88,14 @@ public class As2ObjC
 		String filename = file.getName();
 		int dotIndex = filename.lastIndexOf('.');
 		return dotIndex == -1 ? filename : filename.substring(0, dotIndex);
+	}
+	
+	private static String extractPackageName(String code) 
+	{
+		String token = "package ";
+		int start = code.indexOf(token) + token.length();
+		int end = code.indexOf("\n", start);
+		return code.substring(start, end).trim();
 	}
 	
 	private static String readCode(File file) throws IOException

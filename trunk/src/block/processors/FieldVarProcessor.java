@@ -15,7 +15,7 @@ import block.FieldDeclaration;
 
 public class FieldVarProcessor extends LineProcessor 
 {
-	private Pattern pattern = Pattern.compile(mb("private|protected|public") + MBSPACE + mb("static") + MBSPACE + "var" + SPACE + IDENTIFIER + MBSPACE + ":" + MBSPACE + IDENTIFIER + MBSPACE + mb("=") + MBSPACE + ANY + ";");
+	private Pattern pattern = Pattern.compile(mb("private|protected|public") + MBSPACE + mb("static") + MBSPACE + mb("var") + SPACE + IDENTIFIER + MBSPACE + ":" + MBSPACE + IDENTIFIER + MBSPACE + mb("=") + MBSPACE + ANY + ";");
 	
 	private List<FieldDeclaration> variables;
 	
@@ -32,9 +32,9 @@ public class FieldVarProcessor extends LineProcessor
 		{
 			String modifier = m.group(1);
 			boolean isStatic = m.group(2) != null;
-			String identifier = m.group(3);
-			String type = m.group(4);
-			String initializer = m.group(6);
+			String identifier = m.group(4);
+			String type = m.group(5);
+			String initializer = m.group(7);
 			
 			FieldDeclaration var = new FieldDeclaration(type, identifier);
 			if (modifier != null)
