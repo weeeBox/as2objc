@@ -1,20 +1,13 @@
 package as2ObjC;
 
-import static block.RegexHelp.ANY;
 import static block.RegexHelp.DOT;
 import static block.RegexHelp.IDENTIFIER;
-import static block.RegexHelp.LBRKT;
-import static block.RegexHelp.LPAR;
 import static block.RegexHelp.MBSPACE;
-import static block.RegexHelp.RBRKT;
-import static block.RegexHelp.RPAR;
-import static block.RegexHelp.group;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import actionscriptinfocollector.DeclRecord;
@@ -41,6 +34,7 @@ public class CodeHelper
 		basicTypesLookup.put("String", "NSString*");
 		basicTypesLookup.put("Object", "NSObject*");
 		basicTypesLookup.put("Dictionary", "NSDictionary*");
+		basicTypesLookup.put("Function", "SEL");
 		
 		flowOperators = new ArrayList<String>();
 		flowOperators.add("if");
