@@ -2,6 +2,7 @@ package as2ObjC;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import actionscriptinfocollector.ASCollector;
@@ -9,6 +10,7 @@ import actionscriptinfocollector.ClassRecord;
 import actionscriptinfocollector.DeclRecord;
 import actionscriptinfocollector.FunctionRecord;
 import actionscriptinfocollector.ImportRecord;
+import actionscriptinfocollector.ObjectPositionHolder;
 import actionscriptinfocollector.PropertyLine;
 import actionscriptinfocollector.TextItem;
 import actionscriptinfocollector.TopLevelItemRecord;
@@ -62,15 +64,78 @@ public class CodeWriter
 		List<ImportRecord> imports = collector.getImports();
 		if (imports.size() > 0)
 		{
+			List<String> types = new ArrayList<String>();
+			
 			for (ImportRecord importRecord : imports) 
 			{
 				String fullName = importRecord.getType().getText();
 				int lastDot = fullName.lastIndexOf('.');
 				String shortName = lastDot == -1 ? fullName : fullName.substring(lastDot + 1, fullName.length());
-				CodeHelper.writeImport(hdr, shortName);
+				String typeImport = CodeHelper.typeImport(shortName);
+				CodeHelper.writeImport(hdr, typeImport);
+				types.add(typeImport);
 			}
+			
+			List<String> moreTypes = collectMoreImports(collector);
+			List<String> unique = new ArrayList<String>();
+			for (String type : moreTypes) 
+			{
+				if (!types.contains(type))
+				{
+					unique.add(type);
+				}
+			}
+			
+			
+			for (String type : unique) 
+			{
+				CodeHelper.writeImport(hdr, type);
+			}
+			
 			hdr.writeln();
 		}
+	}
+
+	private List<String> collectMoreImports(ASCollector collector) 
+	{
+		List<String> types = new ArrayList<String>();
+		List<ClassRecord> classRecords = collector.getClassRecords();
+		for (ClassRecord cr : classRecords) 
+		{
+			TextItem extendsItem = cr.getExtends();
+			if (extendsItem != null)
+			{
+				String extendsType = CodeHelper.typeImport(extendsItem);
+				if (!types.contains(extendsType))
+				{
+					types.add(extendsType);
+				}
+			}
+			
+			List<FunctionRecord> functions = cr.getFunctions();
+			for (FunctionRecord functionRecord : functions) 
+			{
+				TextItem returnTypeItem = functionRecord.getReturnType();
+				if (returnTypeItem != null) 
+				{
+					String returnType = CodeHelper.typeImport(returnTypeItem);
+					if (returnType != null && !types.contains(returnType)) 
+					{
+						types.add(returnType);
+					}
+				}
+				List<DeclRecord> parameters = functionRecord.getParameters();
+				for (DeclRecord declRecord : parameters) 
+				{
+					String type = CodeHelper.typeImport(declRecord.getType());
+					if (type != null && !types.contains(type))
+					{
+						types.add(type);
+					}
+				}
+			}
+		}
+		return types;
 	}
 
 	private void writeCollector(ASCollector collector)
