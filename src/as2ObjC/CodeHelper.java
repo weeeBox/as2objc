@@ -33,7 +33,7 @@ public class CodeHelper
 		basicTypesLookup.put("uint", "int");
 		basicTypesLookup.put("String", "NSString*");
 		basicTypesLookup.put("Object", "NSObject*");
-		basicTypesLookup.put("Dictionary", "NSDictionary*");
+		basicTypesLookup.put("Dictionary", "NSMutableDictionary*");
 		basicTypesLookup.put("Function", "SEL");
 		
 		flowOperators = new ArrayList<String>();
