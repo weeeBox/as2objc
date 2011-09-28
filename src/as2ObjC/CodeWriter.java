@@ -137,38 +137,6 @@ public class CodeWriter
 						types.add(type);
 					}
 				}
-				
-				int startPos = functionRecord.getStartPos();
-				int endPos = functionRecord.getEndPos();
-				
-				try
-				{
-					String functionText = doc.get(startPos, endPos - startPos);
-					if (functionText.indexOf('{') != -1 && functionText.indexOf('}') != -1)
-					{
-						int blockStart = functionText.indexOf('{') + 1;
-						int blockEnd = functionText.lastIndexOf('}');
-						BlockParser parser = new BlockParser();
-						List<String> bodyLines = parser.parse(functionText.substring(blockStart, blockEnd));
-						functionRecord.setCodeLines(bodyLines);
-						
-						List<String> blockTypes = parser.getTypes();
-						for (String blockType : blockTypes) 
-						{
-							if (!types.contains(blockType))
-							{
-								types.add(blockType);
-							}
-						}
-					}
-					
-				}
-				catch (BadLocationException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
 			}
 		}
 		return types;

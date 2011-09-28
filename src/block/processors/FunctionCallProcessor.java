@@ -18,7 +18,7 @@ import as2ObjC.CodeHelper;
 public class FunctionCallProcessor extends LineProcessor
 {
 	private static final String MBNEW = mb("new" + SPACE);
-	
+
 	private Pattern pattern = Pattern.compile(group(mb(DOT) + MBNEW + IDENTIFIER + MBSPACE + LPAR));
 
 	private static final int GR_DOT = 2;
@@ -62,7 +62,7 @@ public class FunctionCallProcessor extends LineProcessor
 				for (String arg : args)
 				{
 					argsBuf.append(":");
-					argsBuf.append(arg);
+					argsBuf.append(packArg(arg));
 					if (++argIndex < args.size())
 					{
 						argsBuf.append(" ");
@@ -86,11 +86,6 @@ public class FunctionCallProcessor extends LineProcessor
 			{
 				int targetStart = findTargetStart(line, matcher.start() - 1);
 				String target = line.substring(targetStart, matcher.start()).trim();
-				if (CodeHelper.canBeType(target) && !types.contains(target))
-				{
-					types.add(target);
-				}
-				
 				newCode = createCall(target, identifier, argsBuf.toString());
 				oldCode = line.substring(targetStart, matcher.end() + argsStr.length() + 1);
 			}
@@ -131,6 +126,19 @@ public class FunctionCallProcessor extends LineProcessor
 		return line;
 	}
 	
+	private Object packArg(String arg) 
+	{
+		for (int i = 0; i < arg.length(); i++) 
+		{
+			char chr = arg.charAt(i);
+			if (separators.indexOf(chr) != -1)
+			{
+				return "(" + arg + ")";
+			}
+		}
+		return arg;
+	}
+
 	private String createCall(String target, String message, String args)
 	{
 		String newCode = "[" + target + " " + message + args + "]";
