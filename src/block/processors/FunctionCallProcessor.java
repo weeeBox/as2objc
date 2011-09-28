@@ -45,9 +45,11 @@ public class FunctionCallProcessor extends LineProcessor
 			String argsStr = LineProcHelp.parenthesisVal(line, matcher.end() - 1);
 			
 			StringBuilder argsBuf = new StringBuilder();
+			int argsCount = 0;
 			if (argsStr.length() > 0)
 			{
 				List<String> args = LineProcHelp.splitArgs(argsStr, ',');
+				argsCount = args.size();
 				int argIndex = 0;
 				for (String arg : args)
 				{
@@ -79,9 +81,35 @@ public class FunctionCallProcessor extends LineProcessor
 			else
 			{
 				if (identifier.equals("super"))
+				{
 					newCode = createCall("super", "init", argsBuf.toString());
+				}
 				else
-					newCode = createCall("self", identifier, argsBuf.toString());
+				{
+					if (argsCount == 1) // type casting?
+					{
+						if (CodeHelper.isBasicType(identifier))
+						{
+							newCode = String.format("((%s)(%s))", CodeHelper.type(identifier), argsStr);
+						}
+						else
+						{
+							char firstLetter = identifier.charAt(0);
+							if (Character.isUpperCase(firstLetter))
+							{
+								newCode = String.format("((%s)(%s))", CodeHelper.type(identifier), argsStr);
+							}
+							else
+							{
+								newCode = createCall("self", identifier, argsBuf.toString());
+							}
+						}
+					}
+					else
+					{
+						newCode = createCall("self", identifier, argsBuf.toString());
+					}
+				}
 				oldCode = line.substring(matcher.start(), matcher.end() + argsStr.length() + 1);
 			}
 			line = line.replace(oldCode, newCode);
@@ -99,19 +127,41 @@ public class FunctionCallProcessor extends LineProcessor
 
 	private int findTargetStart(String line, int endPos)
 	{
-		int lastNonSpaceIndex = endPos;
-		for (int i = endPos; i >= 0; --i)
+		char startChar = line.charAt(endPos);
+		if (startChar == ')') // deal with type casting?
 		{
-			char chr = line.charAt(i);
-			
-			if (separators.indexOf(chr) != -1)
+			int counter = 0;
+			for (int i = endPos; i >= 0; --i)
 			{
-				return lastNonSpaceIndex;
+				char chr = line.charAt(i);
+				if (chr == ')')
+				{
+					counter++;
+				}
+				else if (chr == '(')
+				{
+					counter--;
+					if (counter == 0)
+						return i;
+				}
 			}
-			
-			if (chr != ' ')
+		}
+		else
+		{
+			int lastNonSpaceIndex = endPos;
+			for (int i = endPos; i >= 0; --i)
 			{
-				lastNonSpaceIndex = i;
+				char chr = line.charAt(i);
+				
+				if (separators.indexOf(chr) != -1)
+				{
+					return lastNonSpaceIndex;
+				}
+				
+				if (chr != ' ')
+				{
+					lastNonSpaceIndex = i;
+				}
 			}
 		}
 		
