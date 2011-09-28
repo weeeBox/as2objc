@@ -21,8 +21,23 @@ public class CodeHelper
 	private static List<String> flowOperators;
 	private static List<String> systemReserved;
 	
+	private static List<String> basicTypes;
+	
 	static
 	{
+		basicTypes = new ArrayList<String>();
+		basicTypes.add("int");
+		basicTypes.add("uint");
+		basicTypes.add("char");
+		basicTypes.add("uchar");
+		basicTypes.add("float");
+		basicTypes.add("boolean");
+		basicTypes.add("short");
+		basicTypes.add("ushort");
+		basicTypes.add("byte");
+		basicTypes.add("ubyte");
+		basicTypes.add("double");
+		
 		basicTypesLookup = new HashMap<String, String>();
 		basicTypesLookup.put("void", "void");
 		basicTypesLookup.put("int", "int");
@@ -43,6 +58,7 @@ public class CodeHelper
 		flowOperators.add("switch");
 		flowOperators.add("do");
 		flowOperators.add("each");
+		flowOperators.add("return");
 		
 		systemReserved = new ArrayList<String>();
 		systemReserved.add("NSLog");
@@ -62,6 +78,11 @@ public class CodeHelper
 	public static boolean isSystemReserved(String identifier)
 	{
 		return systemReserved.contains(identifier);
+	}
+	
+	public static boolean isBasicType(String type)
+	{
+		return basicTypes.contains(type);
 	}
 	
 	public static String literal(String str)
