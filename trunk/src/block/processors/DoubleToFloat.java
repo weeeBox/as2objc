@@ -8,18 +8,19 @@ import java.util.regex.Pattern;
 
 public class DoubleToFloat extends LineProcessor
 {
-	private static Pattern pattern = Pattern.compile(group("[\\-+\\d]+" + DOT + "[\\d]+") + "[^fF]");
+	private static Pattern pattern = Pattern.compile(group("[\\-+\\d]+" + DOT + "[\\d]+") + group("[^fF]"));
 	
 	@Override
 	public String process(String line)
 	{
 		String temp = line;
 		
-		Matcher matcher = pattern.matcher(line);
-		while (matcher.find())
+		Matcher matcher;
+		while ((matcher = pattern.matcher(temp)).find())
 		{
 			String number = matcher.group(1);
-			temp = temp.replace(number, number + "f");
+			String token = matcher.group(2);
+			temp = matcher.replaceFirst(number + "f" + token);
 		}
 		return temp;
 	}
