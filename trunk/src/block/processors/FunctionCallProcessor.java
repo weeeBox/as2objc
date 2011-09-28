@@ -8,6 +8,7 @@ import static block.RegexHelp.SPACE;
 import static block.RegexHelp.group;
 import static block.RegexHelp.mb;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +26,13 @@ public class FunctionCallProcessor extends LineProcessor
 	private static final int GR_IDENTIFIER = 4;
 
 	private static final String separators = "()[]\b\f\t\n\r|&^+-*/!%=~\\?<>:;{}&@#`\"";
+
+	private List<String> types;
+	
+	public FunctionCallProcessor() 
+	{
+		types = new ArrayList<String>();
+	}
 	
 	@Override
 	public String process(String line)
@@ -69,11 +77,19 @@ public class FunctionCallProcessor extends LineProcessor
 			{
 				oldCode = line.substring(matcher.start(), matcher.end() + argsStr.length() + 1);
 				newCode = createCall("[" + identifier + " alloc]", "init", argsBuf.toString());
+				if (!types.contains(identifier))
+				{
+					types.add(identifier);
+				}
 			}
 			else if (hasCallTarget)
 			{
 				int targetStart = findTargetStart(line, matcher.start() - 1);
 				String target = line.substring(targetStart, matcher.start()).trim();
+				if (CodeHelper.canBeType(target) && !types.contains(target))
+				{
+					types.add(target);
+				}
 				
 				newCode = createCall(target, identifier, argsBuf.toString());
 				oldCode = line.substring(targetStart, matcher.end() + argsStr.length() + 1);
@@ -88,21 +104,17 @@ public class FunctionCallProcessor extends LineProcessor
 				{
 					if (argsCount == 1) // type casting?
 					{
-						if (CodeHelper.isBasicType(identifier))
+						if (CodeHelper.isBasicType(identifier) || CodeHelper.canBeType(identifier))
 						{
+							if (CodeHelper.canBeType(identifier) && !types.contains(identifier))
+							{
+								types.add(identifier);
+							}
 							newCode = String.format("((%s)(%s))", CodeHelper.type(identifier), argsStr);
 						}
 						else
 						{
-							char firstLetter = identifier.charAt(0);
-							if (Character.isUpperCase(firstLetter))
-							{
-								newCode = String.format("((%s)(%s))", CodeHelper.type(identifier), argsStr);
-							}
-							else
-							{
-								newCode = createCall("self", identifier, argsBuf.toString());
-							}
+							newCode = createCall("self", identifier, argsBuf.toString());
 						}
 					}
 					else
@@ -171,5 +183,10 @@ public class FunctionCallProcessor extends LineProcessor
 	private boolean isIdentifierIgnored(String identifier)
 	{
 		return CodeHelper.isFlowOperator(identifier) || CodeHelper.isSystemReserved(identifier);
+	}
+	
+	public List<String> getTypes() 
+	{
+		return types;
 	}
 }

@@ -19,6 +19,7 @@ public class FunctionRecord extends TopLevelItemRecord implements DeclHolder
 	protected int mType;
 	protected TextItem mName;
 	protected List<String> mThrowsExceptions;
+	private List<String> codeLines;
 	
 	public FunctionRecord()
 	{
@@ -28,6 +29,13 @@ public class FunctionRecord extends TopLevelItemRecord implements DeclHolder
 		mThrowsExceptions=new ArrayList<String>();
 	}
 
+	public void setCodeLines(List<String> codeLines) {
+		this.codeLines = codeLines;
+	}
+	
+	public List<String> getCodeLines() {
+		return codeLines;
+	}
 	
 	public TextItem getName() {
 		return mName;
