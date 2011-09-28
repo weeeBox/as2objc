@@ -3,6 +3,7 @@ package as2ObjC;
 import static block.RegexHelp.DOT;
 import static block.RegexHelp.IDENTIFIER;
 import static block.RegexHelp.MBSPACE;
+import static block.RegexHelp.TIDENTIFIER;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ public class CodeHelper
 	private static Map<String, String> basicTypesLookup;
 	private static List<String> flowOperators;
 	private static List<String> systemReserved;
+
+	private static Pattern typePattern = Pattern.compile(TIDENTIFIER);
 	
 	private static List<String> basicTypes;
 	
@@ -61,8 +64,8 @@ public class CodeHelper
 		flowOperators.add("return");
 		
 		systemReserved = new ArrayList<String>();
-		systemReserved.add("NSLog");
-		systemReserved.add("NSAssert");
+		systemReserved.add("trace");
+		systemReserved.add("assert");
 	}
 	
 	private static String findBasic(String type)
@@ -131,7 +134,17 @@ public class CodeHelper
 
 	public static String identifier(TextItem item)
 	{
-		return item.getText();
+		return identifier(item.getText());
+	}
+
+	public static String identifier(String name) 
+	{
+		return name;
+	}
+	
+	public static boolean canBeType(String type) 
+	{
+		return typePattern.matcher(type).matches();
 	}
 	
 	public static void writeImport(WriteDestination dest, String name)

@@ -76,27 +76,31 @@ public class CodeWriter
 				types.add(typeImport);
 			}
 			
-			List<String> moreTypes = collectMoreImports(collector);
-			List<String> unique = new ArrayList<String>();
-			for (String type : moreTypes) 
+			List<String> headerTypes = collectHeaderImports(collector);
+			for (String type : headerTypes) 
 			{
 				if (!types.contains(type))
 				{
-					unique.add(type);
+					CodeHelper.writeImport(hdr, type);
 				}
 			}
 			
+			types.addAll(headerTypes);
 			
-			for (String type : unique) 
+			List<String> implTypes = collectImplImports(collector);
+			for (String type : implTypes) 
 			{
-				CodeHelper.writeImport(hdr, type);
+				if (!types.contains(type))
+				{
+					CodeHelper.writeImport(impl, type);
+				}
 			}
 			
 			hdr.writeln();
 		}
 	}
 
-	private List<String> collectMoreImports(ASCollector collector) 
+	private List<String> collectHeaderImports(ASCollector collector) 
 	{
 		List<String> types = new ArrayList<String>();
 		List<ClassRecord> classRecords = collector.getClassRecords();
@@ -133,6 +137,82 @@ public class CodeWriter
 						types.add(type);
 					}
 				}
+				
+				int startPos = functionRecord.getStartPos();
+				int endPos = functionRecord.getEndPos();
+				
+				try
+				{
+					String functionText = doc.get(startPos, endPos - startPos);
+					if (functionText.indexOf('{') != -1 && functionText.indexOf('}') != -1)
+					{
+						int blockStart = functionText.indexOf('{') + 1;
+						int blockEnd = functionText.lastIndexOf('}');
+						BlockParser parser = new BlockParser();
+						List<String> bodyLines = parser.parse(functionText.substring(blockStart, blockEnd));
+						functionRecord.setCodeLines(bodyLines);
+						
+						List<String> blockTypes = parser.getTypes();
+						for (String blockType : blockTypes) 
+						{
+							if (!types.contains(blockType))
+							{
+								types.add(blockType);
+							}
+						}
+					}
+					
+				}
+				catch (BadLocationException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
+		return types;
+	}
+	
+	private List<String> collectImplImports(ASCollector collector) 
+	{
+		List<String> types = new ArrayList<String>();
+		List<ClassRecord> classRecords = collector.getClassRecords();
+		for (ClassRecord cr : classRecords) 
+		{
+			List<FunctionRecord> functions = cr.getFunctions();
+			for (FunctionRecord functionRecord : functions) 
+			{
+				int startPos = functionRecord.getStartPos();
+				int endPos = functionRecord.getEndPos();
+				
+				try
+				{
+					String functionText = doc.get(startPos, endPos - startPos);
+					if (functionText.indexOf('{') != -1 && functionText.indexOf('}') != -1)
+					{
+						int blockStart = functionText.indexOf('{') + 1;
+						int blockEnd = functionText.lastIndexOf('}');
+						BlockParser parser = new BlockParser();
+						List<String> bodyLines = parser.parse(functionText.substring(blockStart, blockEnd));
+						functionRecord.setCodeLines(bodyLines);
+						
+						List<String> blockTypes = parser.getTypes();
+						for (String blockType : blockTypes) 
+						{
+							if (!types.contains(blockType))
+							{
+								types.add(blockType);
+							}
+						}
+					}
+					
+				}
+				catch (BadLocationException e)
+				{
+					e.printStackTrace();
+				}
+				
 			}
 		}
 		return types;
@@ -336,50 +416,35 @@ public class CodeWriter
 
 	private void writeFunctionBody(ClassRecord classRecord, FunctionRecord functionRecord, boolean isConstructor)
 	{
-		int startPos = functionRecord.getStartPos();
-		int endPos = functionRecord.getEndPos();
-		
-		try
+		List<String> codeLines = functionRecord.getCodeLines();
+		if (codeLines == null)
 		{
-			String functionText = doc.get(startPos, endPos - startPos);
-			if (functionText.indexOf('{') != -1 && functionText.indexOf('}') != -1)
+			return;
+		}
+		
+		if (isConstructor)
+		{
+			String superInit = findSuperInit(codeLines);
+			if (superInit != null)
 			{
-				int blockStart = functionText.indexOf('{') + 1;
-				int blockEnd = functionText.lastIndexOf('}');
-				BlockParser parser = new BlockParser();
-				List<String> bodyLines = parser.parse(functionText.substring(blockStart, blockEnd));
-				
-				if (isConstructor)
-				{
-					String superInit = findSuperInit(bodyLines);
-					if (superInit != null)
-					{
-						bodyLines.remove(superInit);
-					}
-					else
-					{
-						superInit = "[super init];";
-					}
-					
-					writeln(impl, "self = " + superInit);
-					writeln(impl, "if (self)");
-					writeBlockOpen(impl);
-					writeInitializers(impl, classRecord);
-					writeCodeLines(impl, bodyLines);
-					writeBlockClose(impl);
-					writeln(impl, "return self;");
-				}
-				else
-				{
-					writeCodeLines(impl, bodyLines);
-				}
+				codeLines.remove(superInit);
+			}
+			else
+			{
+				superInit = "[super init];";
 			}
 			
+			writeln(impl, "self = " + superInit);
+			writeln(impl, "if (self)");
+			writeBlockOpen(impl);
+			writeInitializers(impl, classRecord);
+			writeCodeLines(impl, codeLines);
+			writeBlockClose(impl);
+			writeln(impl, "return self;");
 		}
-		catch (BadLocationException e)
+		else
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			writeCodeLines(impl, codeLines);
 		}
 	}
 	

@@ -13,6 +13,7 @@ import block.processors.DoubleToFloat;
 import block.processors.FieldVarProcessor;
 import block.processors.FunctionCallProcessor;
 import block.processors.LineProcessor;
+import block.processors.StringLiteralProcessor;
 
 public class ClassParser 
 {
@@ -31,6 +32,7 @@ public class ClassParser
 		processors.add(new ArrayProcessor());
 		processors.add(new FunctionCallProcessor());
 		processors.add(new DoubleToFloat());
+		processors.add(new StringLiteralProcessor());
 		processors.add(varProcessor = new FieldVarProcessor());
 	}
 	
