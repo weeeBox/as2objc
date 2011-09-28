@@ -144,7 +144,7 @@ public class CodeHelper
 	
 	public static boolean canBeType(String type) 
 	{
-		return typePattern.matcher(type).matches();
+		return !isBasicType(type) && typePattern.matcher(type).matches();
 	}
 	
 	public static void writeImport(WriteDestination dest, String name)

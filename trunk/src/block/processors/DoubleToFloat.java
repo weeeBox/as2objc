@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class DoubleToFloat extends LineProcessor
 {
-	private static Pattern pattern = Pattern.compile(group("[\\-+\\d]+" + DOT + "[\\d]+") + group("[^fF]"));
+	private static Pattern pattern = Pattern.compile(group("[\\-+\\d]+" + DOT + "[\\d]+") + group("[^fF\\d]"));
 	
 	@Override
 	public String process(String line)
