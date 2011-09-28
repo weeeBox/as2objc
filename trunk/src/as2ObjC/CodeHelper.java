@@ -74,6 +74,22 @@ public class CodeHelper
 		return type(item.getText());
 	}
 
+	public static String typeImport(TextItem item)
+	{
+		return typeImport(item.getText());
+	}
+	
+	public static String typeImport(String type)
+	{
+		String basicType = findBasic(type);
+		if (basicType != null || isVector(type))
+		{
+			return null;
+		}
+		
+		return type;
+	}
+	
 	public static String type(String type)
 	{
 		assert type != null;
@@ -86,7 +102,7 @@ public class CodeHelper
 		
 		if (isVector(type))
 		{
-			return "NSArray*";
+			return "NSMutableArray*";
 		}
 		
 		return type + "*";
